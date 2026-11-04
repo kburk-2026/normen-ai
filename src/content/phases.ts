@@ -54,7 +54,7 @@ export const STAGES: Record<StageId, Stage> = {
     id: "deployment",
     label: "Deployment",
     icon: IconCloudUpload,
-    tag: "bg-surface text-ink",
+    tag: "bg-line text-ink",
     strip: "border-ink",
   },
 };

@@ -50,7 +50,11 @@ Scorecard, Pulse, Field Guide, Shipped. Exit criteria are "Checkpoints."
 
 1. Scaffold, theme, nav, Overview. **Done (code written, compiled in dev).**
 2. Content model for all 7 phases (activities, guardrails, scorecard items,
-   checkpoint criteria) and the Workbench list view. Karen reviews content.
+   checkpoint criteria) and the Workbench list view. **Done.** Content in
+   `src/content/lifecycle.ts` (each item tagged `course` or `claude`; Karen
+   approved it 2026-11-04), demo seed in `src/content/demo.ts`, state in
+   `src/state/ProjectProvider.tsx` (localStorage key `normen:project:v1`).
+   Activities in locked phases are read-only until checkpoints can be passed.
 3. Board toggle; checkpoint locking with overrides that require a logged reason.
 4. Fit Check: 10 weighted questions; bands 70-100 good fit, 40-69 try rules or
    automation first, under 40 AI isn't the answer. Weights are Claude's design.
@@ -70,4 +74,4 @@ Word/PPT export.
   automatically.
 - Commit as `343284727+kburk-2026@users.noreply.github.com` (set in this repo's
   git config); GitHub rejects pushes that expose the private email.
-- Next: milestone 2.
+- Next: milestone 3.

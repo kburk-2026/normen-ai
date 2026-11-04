@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Bricolage_Grotesque, IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
 import TopNav from "@/components/TopNav";
 import Footer from "@/components/Footer";
+import { ProjectProvider } from "@/state/ProjectProvider";
 import "./globals.css";
 
 const display = Bricolage_Grotesque({
@@ -31,9 +32,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${display.variable} ${sans.variable} ${mono.variable}`}>
       <body className="min-h-screen bg-canvas font-sans text-ink antialiased">
-        <TopNav />
-        <main id="main">{children}</main>
-        <Footer />
+        <ProjectProvider>
+          <TopNav />
+          <main id="main">{children}</main>
+          <Footer />
+        </ProjectProvider>
       </body>
     </html>
   );

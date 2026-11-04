@@ -1,15 +1,11 @@
-import { IconLayoutList } from "@tabler/icons-react";
-import ComingSoon from "@/components/ComingSoon";
+import WorkbenchList from "@/components/workbench/WorkbenchList";
 
 export const metadata = { title: "Workbench · Normen AI" };
 
 export default function Page() {
   return (
-    <ComingSoon
-      title="Workbench"
-      icon={IconLayoutList}
-      description="Every phase, its activities, guardrails and checkpoint, in list or board view."
-      milestone="milestones 2 and 3"
-    />
+    <section className="mx-auto max-w-6xl px-5 py-12">
+      <WorkbenchList />
+    </section>
   );
 }
