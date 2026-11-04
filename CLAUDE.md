@@ -64,6 +64,11 @@ Scorecard, Pulse, Field Guide, Shipped. Exit criteria are "Checkpoints."
    seed passes Plan with an override (privacy review open).
 4. Fit Check: 10 weighted questions; bands 70-100 good fit, 40-69 try rules or
    automation first, under 40 AI isn't the answer. Weights are Claude's design.
+   **Done.** Questions, weights (sum 100) and scoring in `src/content/fitCheck.ts`;
+   Karen approved them 2026-11-04. One cap, at her request: answering "serious
+   harm, and nobody would catch it" forces the "AI isn't the answer" band
+   whatever the total. Answers are not saved; the result is not yet linked to
+   the Conceive checkpoint (possible follow-up).
 5. Field Guide, Shipped, export to Markdown and PDF (print stylesheet).
 6. Accessibility pass (keyboard, contrast), README architecture notes.
 
@@ -80,4 +85,4 @@ Word/PPT export.
   automatically.
 - Commit as `343284727+kburk-2026@users.noreply.github.com` (set in this repo's
   git config); GitHub rejects pushes that expose the private email.
-- Next: milestone 4 (Fit Check).
+- Next: milestone 5 (Field Guide, Shipped, export).
