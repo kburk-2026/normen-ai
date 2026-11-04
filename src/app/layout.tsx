@@ -1,24 +1,29 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
+import localFont from "next/font/local";
 import TopNav from "@/components/TopNav";
 import Footer from "@/components/Footer";
 import { ProjectProvider } from "@/state/ProjectProvider";
 import "./globals.css";
 
-const display = Bricolage_Grotesque({
-  subsets: ["latin"],
+// Fonts are bundled in src/fonts (latin subset, from Fontsource, SIL OFL 1.1) so
+// builds never depend on reaching Google Fonts.
+const display = localFont({
+  src: "../fonts/bricolage-grotesque-latin-wght-normal.woff2",
+  weight: "200 800",
   variable: "--font-bricolage",
 });
 
-const sans = IBM_Plex_Sans({
-  subsets: ["latin"],
-  weight: ["400", "500"],
+const sans = localFont({
+  src: [
+    { path: "../fonts/ibm-plex-sans-latin-400-normal.woff2", weight: "400" },
+    { path: "../fonts/ibm-plex-sans-latin-500-normal.woff2", weight: "500" },
+  ],
   variable: "--font-plex-sans",
 });
 
-const mono = IBM_Plex_Mono({
-  subsets: ["latin"],
-  weight: ["400"],
+const mono = localFont({
+  src: "../fonts/ibm-plex-mono-latin-400-normal.woff2",
+  weight: "400",
   variable: "--font-plex-mono",
 });
 
