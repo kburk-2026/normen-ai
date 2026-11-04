@@ -1,6 +1,6 @@
 import { PHASES, type PhaseId } from "@/content/phases";
 import { CHECKPOINTS } from "@/content/lifecycle";
-import { DEMO_PROJECT, type Project } from "@/content/demo";
+import { DEMO_PROJECT, allDefaultSections, PROJECT_STATUSES, type Project } from "@/content/demo";
 
 export type PhaseState = "passed" | "current" | "locked";
 
@@ -24,9 +24,9 @@ export function canPass(project: Project, phase: PhaseId): boolean {
   return phaseState(project, phase) === "current" && openCriteria(project, phase).length === 0;
 }
 
-export function pass(project: Project, phase: PhaseId): Project {
+export function pass(project: Project, phase: PhaseId, today: string): Project {
   if (!canPass(project, phase)) return project;
-  return { ...project, passed: [...project.passed, phase] };
+  return { ...project, passed: [...project.passed, phase], passedAt: { ...project.passedAt, [phase]: today } };
 }
 
 export const MIN_REASON = 20;
@@ -37,6 +37,7 @@ export function passWithOverride(project: Project, phase: PhaseId, reason: strin
   return {
     ...project,
     passed: [...project.passed, phase],
+    passedAt: { ...project.passedAt, [phase]: today },
     overrides: [
       ...project.overrides.filter((o) => o.phase !== phase),
       { phase, reason: trimmed, at: today, openCriteria: openCriteria(project, phase) },
@@ -51,14 +52,46 @@ export function toggleCheck(project: Project, criterionId: string): Project {
   return { ...project, checks: { ...project.checks, [criterionId]: !project.checks[criterionId] } };
 }
 
-/** Fill in fields added after a project was saved, so older saves keep working. */
-export function withDefaults(saved: Partial<Project>): Project {
+/**
+ * Fill in fields added after a project was saved, so older saves and backups
+ * keep working. Anything missing falls back to an empty project, except that a
+ * save with no ID is the original single demo project.
+ */
+export function normalizeProject(saved: Partial<Project>): Project {
+  const sections = { ...allDefaultSections(), ...(saved.sections ?? {}) };
+  for (const phase of PHASES) {
+    // Every phase keeps its Overview and Checklist, whatever a backup says.
+    const list = sections[phase.id] ?? [];
+    const hasOverview = list.some((x) => x.kind === "overview");
+    const hasChecklist = list.some((x) => x.kind === "checklist");
+    const defaults = allDefaultSections()[phase.id];
+    sections[phase.id] = [
+      ...(hasOverview ? [] : [defaults[0]]),
+      ...(hasChecklist ? [] : [defaults[1]]),
+      ...list,
+    ];
+  }
+  const base = saved.id ? undefined : DEMO_PROJECT;
   return {
-    ...DEMO_PROJECT,
-    ...saved,
-    activities: saved.activities ?? DEMO_PROJECT.activities,
-    checks: saved.checks ?? DEMO_PROJECT.checks,
-    passed: saved.passed ?? DEMO_PROJECT.passed,
+    id: saved.id ?? DEMO_PROJECT.id,
+    name: saved.name ?? base?.name ?? "Untitled project",
+    blurb: saved.blurb ?? base?.blurb ?? "",
+    status: PROJECT_STATUSES.includes(saved.status as never)
+      ? (saved.status as Project["status"])
+      : (base?.status ?? "Draft"),
+    isDemo: saved.isDemo ?? !saved.id,
+    createdAt: saved.createdAt ?? base?.createdAt ?? new Date().toISOString(),
+    updatedAt: saved.updatedAt ?? base?.updatedAt ?? new Date().toISOString(),
+    activities: saved.activities ?? {},
+    checks: saved.checks ?? {},
+    passed: saved.passed ?? [],
+    // The original demo save had no pass dates: keep the seeded ones for phases it had passed.
+    passedAt:
+      saved.passedAt ??
+      Object.fromEntries(
+        Object.entries(base?.passedAt ?? {}).filter(([phase]) => (saved.passed ?? []).includes(phase as PhaseId)),
+      ),
     overrides: saved.overrides ?? [],
+    sections,
   };
 }

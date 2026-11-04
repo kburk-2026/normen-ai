@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import TopNav from "@/components/TopNav";
 import Footer from "@/components/Footer";
-import { ProjectProvider } from "@/state/ProjectProvider";
+import { WorkspaceProvider } from "@/state/ProjectProvider";
 import "./globals.css";
 
 // Fonts are bundled in src/fonts (latin subset, from Fontsource, SIL OFL 1.1) so
@@ -37,11 +37,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${display.variable} ${sans.variable} ${mono.variable}`}>
       <body className="min-h-screen bg-canvas font-sans text-ink antialiased">
-        <ProjectProvider>
+        <WorkspaceProvider>
           <TopNav />
           <main id="main">{children}</main>
           <Footer />
-        </ProjectProvider>
+        </WorkspaceProvider>
       </body>
     </html>
   );

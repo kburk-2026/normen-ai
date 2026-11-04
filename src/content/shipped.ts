@@ -15,6 +15,13 @@ export const SHIPPED: ShippedEntry[] = [
   {
     date: "2026-11-04",
     kind: "Milestone",
+    label: "Milestone 7",
+    title: "Projects",
+    body: "The Workbench holds many projects now, each with its phases as tabs and your own sections inside each phase. Back up and restore everything as one file.",
+  },
+  {
+    date: "2026-11-04",
+    kind: "Milestone",
     label: "Milestone 6",
     title: "Accessibility pass",
     body: "Every page now meets WCAG AA contrast, has headings and labels in order for screen readers, and respects reduced motion.",

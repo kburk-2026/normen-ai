@@ -82,11 +82,63 @@ Scorecard, Pulse, Field Guide, Shipped. Exit criteria are "Checkpoints."
    contrast; keep new text colors at 4.5:1 or above. README has the
    architecture and accessibility notes.
 
-State: React context plus localStorage. One seeded demo project, "Expense triage."
+State: React context plus localStorage. Many projects (milestone 7); the seeded demo is "Expense triage."
 Deferred: ROI model, timeline view, Curriculum Program Designer case study,
 live Scorecard/Pulse dashboards (phase 2); Supabase auth, saved projects, share
-links, comments, Lighthouse CI (phase 3). Dropped: block editor, drawing tool,
-Word/PPT export.
+links, comments, Lighthouse CI (phase 3). Dropped: drawing tool, live HTML
+embeds, Word/PPT export. (The block editor was dropped in phase 1 and brought
+back by Karen on 2026-11-04; see phase 2.)
+
+## Phase 2 plan (approved 2026-11-04)
+
+Normen tracks real projects, modeled on Karen's PD Playbook (`Product
+Development Space`). **Read the Playbook for reference only; never change it or
+copy its code.** Its shape: a hub of programs with status; each program has
+tabs, tabs have sections, sections hold blocks added from an "Add a block"
+picker; a Tools menu; Edit/View mode; export.
+
+Decisions (Karen, 2026-11-04):
+- Structure: projects hub; each project has the 7 phases as sidebar tabs; each
+  phase starts with an Overview section (blocks) and the existing Checklist
+  (activities, guardrails, checkpoint); users add, rename, reorder and delete
+  their own sections.
+- Text blocks are plain text with line breaks. Drawing and live HTML embeds
+  stay dropped.
+- Admin side in phase 2: a Tools menu and an Edit/View switch. Real roles
+  (admin, viewer, commenter) need sign-in and arrive with Supabase in phase 3.
+- Media blocks take URLs and links only: localStorage holds about 5 MB, so no
+  uploads until phase 3 storage.
+- Still no server, no paid APIs. Everything saves in the browser, so backup
+  and restore ship with the first milestone that lets people write.
+
+Milestones (a mockup before each, Karen approves before any push):
+7. Projects hub and project shell: create, rename, duplicate, delete; status
+   (Draft, In Progress, In Review, Complete); phase tabs with sections;
+   checkpoint pass dates recorded; migrate the saved v1 project; JSON backup
+   and restore of all projects.
+   **Done.** `/workbench` is the hub; `/workbench/<id>` (all phases),
+   `/workbench/<id>/board`, `/workbench/<id>/<phase>/<section>`. Workspace
+   rules in `src/state/workspace.ts`; `WorkspaceProvider` saves to
+   `normen:workspace:v2`; `ProjectScope` binds the Workbench components to one
+   project. The phase 1 save (`normen:project:v1`) is migrated into the demo on
+   first load and left in place, never deleted. Backups are the workspace JSON;
+   restore replaces every project after a confirmation. Locked phases' sections
+   stay writable (only checklist items lock). Norm is not used in warning
+   dialogs.
+8. Block editor core: Add a block picker; Text, Callout, Divider, Table;
+   reorder (drag and keyboard), delete, autosave; Edit/View switch; blocks
+   included in Markdown and PDF export.
+9. Governance blocks: Decision Log, Approval Tracker, Timeline, SWOT.
+10. AI blocks: Risk Register, Model Card, Data Sources.
+11. Media blocks: Image, Video, File/Link (URLs only).
+12. Tools menu: backup and restore, project changelog, status, keyboard
+    shortcuts. Link the Fit Check score to the Conceive checkpoint.
+13. Scorecard dashboard (own targets, logged readings, status per metric).
+14. Pulse (weekly drift, flagged outputs, usage trends; incident log).
+15. Guardrails page with risk tiering (tier decides required guardrails).
+16. ROI model (also as a calculator block).
+17. Timeline view in the Workbench (uses checkpoint pass dates).
+18. Curriculum Program Designer case study (needs Karen's material).
 
 ## Status (2026-11-04)
 
@@ -95,4 +147,4 @@ Word/PPT export.
   automatically.
 - Commit as `343284727+kburk-2026@users.noreply.github.com` (set in this repo's
   git config); GitHub rejects pushes that expose the private email.
-- Phase 1 is complete. Next: phase 2 (live Scorecard and Pulse dashboards).
+- Phase 1 is complete. Phase 2 milestone 7 is done. Next: milestone 8 (block editor core).
