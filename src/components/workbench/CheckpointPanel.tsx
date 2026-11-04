@@ -13,16 +13,8 @@ import Mascot from "@/components/Mascot";
 import { ACTIVITIES, CHECKPOINTS } from "@/content/lifecycle";
 import { PHASES, type PhaseId } from "@/content/phases";
 import { useProject } from "@/state/ProjectProvider";
+import { formatDate } from "@/lib/format";
 import { MIN_REASON, canPass, openCriteria, overrideFor, phaseState } from "@/state/project";
-
-export function formatDate(iso: string) {
-  return new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    timeZone: "UTC",
-  });
-}
 
 export default function CheckpointPanel({
   phase,

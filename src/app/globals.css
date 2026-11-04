@@ -38,3 +38,19 @@ html {
   outline: 2px solid var(--color-orange);
   outline-offset: 2px;
 }
+
+/* Printing (the Workbench PDF export): black on white, no app chrome. */
+@media print {
+  @page {
+    margin: 16mm;
+  }
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  main > section {
+    padding: 0 !important;
+    max-width: none !important;
+  }
+}

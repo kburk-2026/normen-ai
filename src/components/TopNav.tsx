@@ -10,7 +10,7 @@ export default function TopNav() {
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-20 border-b border-line bg-canvas/90 backdrop-blur">
+    <header className="sticky top-0 z-20 print:hidden border-b border-line bg-canvas/90 backdrop-blur">
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:rounded-full focus:bg-orange focus:px-3 focus:py-1 focus:text-orange-ink"

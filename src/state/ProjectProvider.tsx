@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { DEMO_PROJECT, type ActivityStatus, type Project } from "@/content/demo";
 import type { PhaseId } from "@/content/phases";
+import { today } from "@/lib/format";
 import * as P from "./project";
 
 const STORAGE_KEY = "normen:project:v1";
@@ -18,12 +19,6 @@ type ProjectContextValue = {
 };
 
 const ProjectContext = createContext<ProjectContextValue | null>(null);
-
-/** Today's date as YYYY-MM-DD in the user's own time zone. */
-function today() {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
 
 /**
  * Holds the one project the app works on. Starts from the seeded demo so the

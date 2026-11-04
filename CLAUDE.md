@@ -70,6 +70,12 @@ Scorecard, Pulse, Field Guide, Shipped. Exit criteria are "Checkpoints."
    whatever the total. Answers are not saved; the result is not yet linked to
    the Conceive checkpoint (possible follow-up).
 5. Field Guide, Shipped, export to Markdown and PDF (print stylesheet).
+   **Done.** Field Guide (`src/app/field-guide`) shows every item with a Course
+   or Claude's addition tag; stage descriptions are Claude's. Shipped is the
+   app's changelog, written by hand in `src/content/shipped.ts`: add an entry at
+   the top with each release. Export lives on the Workbench: Markdown download
+   (`src/lib/exportProject.ts`) and PDF via the browser's print dialog, which
+   prints the print-only `ProjectPrint` view. App chrome uses `print:hidden`.
 6. Accessibility pass (keyboard, contrast), README architecture notes.
 
 State: React context plus localStorage. One seeded demo project, "Expense triage."
@@ -85,4 +91,4 @@ Word/PPT export.
   automatically.
 - Commit as `343284727+kburk-2026@users.noreply.github.com` (set in this repo's
   git config); GitHub rejects pushes that expose the private email.
-- Next: milestone 5 (Field Guide, Shipped, export).
+- Next: milestone 6 (accessibility pass, README architecture notes).

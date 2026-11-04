@@ -16,8 +16,8 @@ Normen AI maps the seven product management lifecycle phases (Conceive, Plan, De
 | 2 | Content model, Workbench list view | Done |
 | 3 | Board toggle, checkpoint locking with logged overrides | Done |
 | 4 | Fit Check | Done |
-| 5 | Field Guide, Shipped, export | Next |
-| 6 | Accessibility pass, architecture notes | Planned |
+| 5 | Field Guide, Shipped, export | Done |
+| 6 | Accessibility pass, architecture notes | Next |
 
 ## Stack
 
