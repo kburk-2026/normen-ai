@@ -35,6 +35,10 @@ Supabase only in phase 3. Everything must stay on free tiers: no paid AI APIs.
 - Icons: Tabler (`@tabler/icons-react`), outline style.
 - Norm, the mascot (`src/components/Mascot.tsx`), is used sparingly: onboarding,
   empty states, Fit Check results and checkpoints. Never inside the Workbench views.
+  One exception, chosen by Karen: a small Norm peeks over the header's bottom border
+  beside the wordmark on every page (`public/brand/norm-peek.png`, with motion marks,
+  cut from her ChatGPT banner and recolored to the tokens; `norm-peek-plain.png` is
+  the same cutout without the marks).
 - Rounded corners and pill buttons. Activity IDs use the `NRM-` prefix.
 
 ## Sections
@@ -59,10 +63,11 @@ live Scorecard/Pulse dashboards (phase 2); Supabase auth, saved projects, share
 links, comments, Lighthouse CI (phase 3). Dropped: block editor, drawing tool,
 Word/PPT export.
 
-## Status at handoff (2026-11-04)
+## Status (2026-11-04)
 
-- `npm install` done. `npm run dev` compiled all pages, then the server stopped.
-- CI workflow is in `.github/workflows/ci.yml`.
-- Not yet pushed. The GitHub repo holds only its starter README and .gitignore,
-  so the first push needs `--force` (once only).
-- Next: confirm the site runs, push, import into Vercel, start milestone 2.
+- Pushed to `kburk-2026/normen-ai` (main). CI passes on every push.
+- Live on Vercel Hobby at https://normen-ai.vercel.app; pushes to main deploy
+  automatically.
+- Commit as `343284727+kburk-2026@users.noreply.github.com` (set in this repo's
+  git config); GitHub rejects pushes that expose the private email.
+- Next: milestone 2.

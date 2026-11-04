@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NAV } from "@/content/nav";
@@ -17,8 +18,17 @@ export default function TopNav() {
         Skip to content
       </a>
       <div className="mx-auto flex max-w-6xl items-center gap-4 px-5 py-3">
-        <Link href="/" aria-label="Normen AI home" className="shrink-0">
+        <Link href="/" aria-label="Normen AI home" className="relative flex shrink-0 items-center pr-[72px]">
           <Wordmark />
+          {/* Norm peeks up over the header's bottom border; the logo is his one standing appearance. */}
+          <Image
+            src="/brand/norm-peek.png"
+            alt=""
+            width={64}
+            height={34}
+            priority
+            className="pointer-events-none absolute -bottom-[13px] right-0 h-[34px] w-auto"
+          />
         </Link>
 
         <nav aria-label="Primary" className="flex flex-1 gap-1 overflow-x-auto text-sm">
