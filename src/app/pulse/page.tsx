@@ -9,7 +9,7 @@ export default function Page() {
       title="Pulse"
       icon={IconHeartbeat}
       description="Post-launch monitoring: model drift, user feedback, usage and incidents."
-      milestone="milestone 2"
+      milestone="phase 2"
     />
   );
 }

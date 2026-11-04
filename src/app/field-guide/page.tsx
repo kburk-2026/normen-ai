@@ -21,8 +21,8 @@ const ADDITIONS = [
   ["Post-launch monitoring", "Drift, flagged outputs and incidents tracked with an owner for each alert."],
 ];
 
-const H4 = ({ children }: { children: React.ReactNode }) => (
-  <h4 className="mt-6 text-xs font-medium uppercase tracking-wide text-faint">{children}</h4>
+const H3 = ({ children }: { children: React.ReactNode }) => (
+  <h3 className="mt-6 text-xs font-medium uppercase tracking-wide text-faint">{children}</h3>
 );
 
 export default function Page() {
@@ -105,7 +105,7 @@ export default function Page() {
               ))}
             </p>
 
-            <H4>Activities</H4>
+            <H3>Activities</H3>
             <ul className="mt-2 space-y-3">
               {ACTIVITIES.filter((a) => a.phase === phase.id).map((a) => (
                 <li key={a.id}>
@@ -118,7 +118,7 @@ export default function Page() {
               ))}
             </ul>
 
-            <H4>Guardrails</H4>
+            <H3>Guardrails</H3>
             <ul className="mt-2 space-y-3">
               {GUARDRAILS.filter((g) => g.phase === phase.id).map((g) => (
                 <li key={g.id}>
@@ -131,7 +131,7 @@ export default function Page() {
               ))}
             </ul>
 
-            <H4>Scorecard</H4>
+            <H3>Scorecard</H3>
             <ul className="mt-2 space-y-3">
               {SCORECARD.filter((s) => s.phase === phase.id).map((s) => (
                 <li key={s.id} className="text-sm">
@@ -145,7 +145,7 @@ export default function Page() {
               ))}
             </ul>
 
-            <H4>Checkpoint</H4>
+            <H3>Checkpoint</H3>
             <ul className="mt-2 space-y-1.5">
               {CHECKPOINTS.filter((c) => c.phase === phase.id).map((c) => (
                 <li key={c.id} className="flex flex-wrap items-center gap-2 text-sm">

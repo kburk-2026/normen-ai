@@ -15,6 +15,13 @@ export const SHIPPED: ShippedEntry[] = [
   {
     date: "2026-11-04",
     kind: "Milestone",
+    label: "Milestone 6",
+    title: "Accessibility pass",
+    body: "Every page now meets WCAG AA contrast, has headings and labels in order for screen readers, and respects reduced motion.",
+  },
+  {
+    date: "2026-11-04",
+    kind: "Milestone",
     label: "Milestone 5",
     title: "Field Guide, Shipped and export",
     body: "The full method with every item labeled by source, this log, and project export to Markdown or PDF.",

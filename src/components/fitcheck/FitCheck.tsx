@@ -6,6 +6,10 @@ import { IconAlertTriangle, IconArrowRight, IconCircleCheck, IconRefresh, IconTa
 import Mascot from "@/components/Mascot";
 import { FIT_BANDS, FIT_QUESTIONS, scoreFit, type FitBand } from "@/content/fitCheck";
 
+/** Smooth scrolling, unless the user's system asks for less motion. */
+const scrollBehavior = (): ScrollBehavior =>
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+
 const MOOD: Record<FitBand, "cheer" | "think" | "alert"> = { good: "cheer", simpler: "think", no: "alert" };
 const TONE: Record<FitBand, string> = { good: "text-orange", simpler: "text-steel-soft", no: "text-tan" };
 
@@ -19,13 +23,13 @@ export default function FitCheck() {
   // Bring the result into view the moment the last question is answered.
   const wasComplete = useRef(false);
   useEffect(() => {
-    if (complete && !wasComplete.current) result.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (complete && !wasComplete.current) result.current?.scrollIntoView({ behavior: scrollBehavior(), block: "start" });
     wasComplete.current = complete;
   }, [complete]);
 
   const startOver = () => {
     setAnswers({});
-    top.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    top.current?.scrollIntoView({ behavior: scrollBehavior(), block: "start" });
   };
 
   return (

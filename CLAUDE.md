@@ -77,6 +77,10 @@ Scorecard, Pulse, Field Guide, Shipped. Exit criteria are "Checkpoints."
    (`src/lib/exportProject.ts`) and PDF via the browser's print dialog, which
    prints the print-only `ProjectPrint` view. App chrome uses `print:hidden`.
 6. Accessibility pass (keyboard, contrast), README architecture notes.
+   **Done.** axe-core (WCAG A, AA, best practice) passes on every page. Faint
+   text lightened to #a5a298 and the AI pill text darkened to #0a1015 for 4.5:1
+   contrast; keep new text colors at 4.5:1 or above. README has the
+   architecture and accessibility notes.
 
 State: React context plus localStorage. One seeded demo project, "Expense triage."
 Deferred: ROI model, timeline view, Curriculum Program Designer case study,
@@ -91,4 +95,4 @@ Word/PPT export.
   automatically.
 - Commit as `343284727+kburk-2026@users.noreply.github.com` (set in this repo's
   git config); GitHub rejects pushes that expose the private email.
-- Next: milestone 6 (accessibility pass, README architecture notes).
+- Phase 1 is complete. Next: phase 2 (live Scorecard and Pulse dashboards).

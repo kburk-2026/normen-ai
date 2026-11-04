@@ -9,7 +9,7 @@ export default function Page() {
       title="Scorecard"
       icon={IconGauge}
       description="The evaluation metrics an AI project sets, baselines and must hit before launch."
-      milestone="milestone 2"
+      milestone="phase 2"
     />
   );
 }

@@ -9,7 +9,7 @@ export default function Page() {
       title="Guardrails"
       icon={IconShieldCheck}
       description="Risk tiering, data privacy, bias testing and human review, mapped to each phase."
-      milestone="milestone 2"
+      milestone="a later phase"
     />
   );
 }
