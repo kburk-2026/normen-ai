@@ -54,8 +54,14 @@ Scorecard, Pulse, Field Guide, Shipped. Exit criteria are "Checkpoints."
    `src/content/lifecycle.ts` (each item tagged `course` or `claude`; Karen
    approved it 2026-11-04), demo seed in `src/content/demo.ts`, state in
    `src/state/ProjectProvider.tsx` (localStorage key `normen:project:v1`).
-   Activities in locked phases are read-only until checkpoints can be passed.
+   Activities in locked phases are read-only.
 3. Board toggle; checkpoint locking with overrides that require a logged reason.
+   **Done.** Rules live in `src/state/project.ts`: a phase is current once every
+   earlier phase is passed; passing needs every criterion ticked; an override
+   needs a reason of 20+ characters and is kept as a dated record with the
+   criteria that were open. Passes cannot be undone except by Reset demo. Board
+   columns are status (To do, In progress, Done), filtered by phase. The demo
+   seed passes Plan with an override (privacy review open).
 4. Fit Check: 10 weighted questions; bands 70-100 good fit, 40-69 try rules or
    automation first, under 40 AI isn't the answer. Weights are Claude's design.
 5. Field Guide, Shipped, export to Markdown and PDF (print stylesheet).
@@ -74,4 +80,4 @@ Word/PPT export.
   automatically.
 - Commit as `343284727+kburk-2026@users.noreply.github.com` (set in this repo's
   git config); GitHub rejects pushes that expose the private email.
-- Next: milestone 3.
+- Next: milestone 4 (Fit Check).
