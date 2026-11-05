@@ -23,11 +23,7 @@ export default function OverviewPage() {
     <>
       <section className="mx-auto grid max-w-6xl items-center gap-10 px-5 pb-12 pt-16 md:grid-cols-[1.5fr_1fr]">
         <div>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-steel-bg px-3 py-1 text-xs text-steel-soft">
-            <IconShieldCheck size={14} stroke={1.75} aria-hidden />
-            Guardrails built into every phase
-          </span>
-          <h1 className="mt-5 font-display text-5xl font-medium leading-[1.05] tracking-tight md:text-6xl">
+          <h1 className="font-display text-5xl font-medium leading-[1.05] tracking-tight md:text-6xl">
             Good AI has norms.
           </h1>
           <p className="mt-5 max-w-md text-lg leading-relaxed text-muted">
