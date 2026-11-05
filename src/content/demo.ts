@@ -1,4 +1,7 @@
 import type { PhaseId } from "./phases";
+import type { Block } from "./blocks";
+
+export type { Block };
 
 export type ActivityStatus = "todo" | "doing" | "done";
 
@@ -14,9 +17,6 @@ export type Override = {
   /** Criteria IDs that were open when the override was logged. */
   openCriteria: string[];
 };
-
-/** A block of content in a section. Block types arrive in milestone 8. */
-export type Block = { id: string; type: string; [key: string]: unknown };
 
 /**
  * A page inside a phase. Every phase has an "overview" and a "checklist"
@@ -54,7 +54,10 @@ export type Project = {
   sections: Record<PhaseId, Section[]>;
 };
 
-const SEED_TIME = "2026-11-04T00:00:00.000Z";
+/** Noon UTC, so the seed shows as 4 Nov in every time zone from UTC-11 to UTC+11. */
+export const SEED_TIME = "2026-11-04T12:00:00.000Z";
+/** The seed time before milestone 8, still found in older saves. */
+export const OLD_SEED_TIME = "2026-11-04T00:00:00.000Z";
 
 /** The two sections every phase starts with. IDs are stable per phase. */
 export function defaultSections(phase: PhaseId, at = SEED_TIME): Section[] {
@@ -116,5 +119,70 @@ export const DEMO_PROJECT: Project = {
       openCriteria: ["C-202"],
     },
   ],
-  sections: allDefaultSections(),
+  sections: demoSections(),
 };
+
+/** The demo's written pages: the default sections, with blocks in the phases it has reached. */
+function demoSections(): Record<PhaseId, Section[]> {
+  const s = allDefaultSections();
+  const blocks: Partial<Record<PhaseId, Block[]>> = {
+    conceive: [
+      {
+        id: "b-c1",
+        type: "text",
+        text: "Finance reviews every expense claim by hand, about 2,400 a month. Most are routine. The ones that need a second look (duplicates, policy breaks, odd amounts) wait in the same queue as everything else.\n\nThe idea: flag the claims that need a second look, so reviewers start there.",
+      },
+      {
+        id: "b-c2",
+        type: "callout",
+        tone: "decision",
+        text: "Decided 7 Oct: AI flags, people decide. No claim is approved or rejected without a reviewer.",
+      },
+    ],
+    plan: [
+      {
+        id: "b-p1",
+        type: "callout",
+        tone: "warning",
+        text: "Passed with an override: the privacy review (C-202) is still open. Data prep uses anonymized claims until legal signs off.",
+      },
+      {
+        id: "b-p2",
+        type: "table",
+        rows: [
+          ["Role", "Who", "Owns"],
+          ["Sponsor", "Head of Finance", "Go or no-go at each checkpoint"],
+          ["Product", "Ops product manager", "Scope, success measures"],
+          ["Data", "Analytics team", "Pipeline and labels"],
+        ],
+      },
+    ],
+    develop: [
+      {
+        id: "b-d1",
+        type: "text",
+        text: "Two approaches so far, both trained on 18 months of anonymized travel claims. Finance labels which claims needed a second look.",
+      },
+      {
+        id: "b-d2",
+        type: "table",
+        rows: [
+          ["Experiment", "Result", "Next"],
+          ["Rules baseline", "Catches 61% of flagged claims", "Keep as fallback"],
+          ["Gradient boosted model", "Catches 84%, 6% false flags", "Bias check by department"],
+        ],
+      },
+      { id: "b-d3", type: "divider" },
+      {
+        id: "b-d4",
+        type: "callout",
+        tone: "note",
+        text: "Example figures for the demo, not real results.",
+      },
+    ],
+  };
+  for (const [phase, list] of Object.entries(blocks) as [PhaseId, Block[]][]) {
+    s[phase] = s[phase].map((x) => (x.kind === "overview" ? { ...x, blocks: list } : x));
+  }
+  return s;
+}

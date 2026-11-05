@@ -1,5 +1,6 @@
 import { DEMO_PROJECT, allDefaultSections, type Project, type Section } from "@/content/demo";
 import type { PhaseId } from "@/content/phases";
+import { newBlock, type Block, type BlockType } from "@/content/blocks";
 import { normalizeProject } from "./project";
 
 /** Everything Normen stores in the browser. */
@@ -120,6 +121,61 @@ export function moveSection(project: Project, phase: PhaseId, sectionId: string,
 
 export function deleteSection(project: Project, phase: PhaseId, sectionId: string): Project {
   return mapSections(project, phase, (list) => list.filter((s) => !(s.id === sectionId && s.kind === "custom")));
+}
+
+// ---- Blocks. Every section except the Checklist holds blocks; each change stamps the section. ----
+
+export function addBlock(project: Project, phase: PhaseId, sectionId: string, type: BlockType): [Project, Block] {
+  const block = newBlock(type, newId("b"));
+  return [mapBlocks(project, phase, sectionId, (list) => [...list, block]), block];
+}
+
+/** Put a block back at a position, e.g. to undo a delete. */
+export function insertBlock(project: Project, phase: PhaseId, sectionId: string, block: Block, index: number): Project {
+  return mapBlocks(project, phase, sectionId, (list) => {
+    if (list.some((b) => b.id === block.id)) return list;
+    const next = [...list];
+    next.splice(Math.max(0, Math.min(index, next.length)), 0, block);
+    return next;
+  });
+}
+
+export function updateBlock(
+  project: Project,
+  phase: PhaseId,
+  sectionId: string,
+  blockId: string,
+  fn: (b: Block) => Block,
+): Project {
+  return mapBlocks(project, phase, sectionId, (list) => list.map((b) => (b.id === blockId ? fn(b) : b)));
+}
+
+/** Move a block to a new index (its index after the move). */
+export function moveBlock(project: Project, phase: PhaseId, sectionId: string, blockId: string, to: number): Project {
+  return mapBlocks(project, phase, sectionId, (list) => {
+    const i = list.findIndex((b) => b.id === blockId);
+    const j = Math.max(0, Math.min(to, list.length - 1));
+    if (i < 0 || i === j) return list;
+    const next = [...list];
+    const [b] = next.splice(i, 1);
+    next.splice(j, 0, b);
+    return next;
+  });
+}
+
+export function deleteBlock(project: Project, phase: PhaseId, sectionId: string, blockId: string): Project {
+  return mapBlocks(project, phase, sectionId, (list) => list.filter((b) => b.id !== blockId));
+}
+
+function mapBlocks(project: Project, phase: PhaseId, sectionId: string, fn: (list: Block[]) => Block[]): Project {
+  const list = project.sections[phase];
+  const s = list.find((x) => x.id === sectionId);
+  if (!s || s.kind === "checklist") return project;
+  const blocks = fn(s.blocks);
+  if (blocks === s.blocks) return project;
+  return mapSections(project, phase, (l) =>
+    l.map((x) => (x.id === sectionId ? { ...x, blocks, updatedAt: new Date().toISOString() } : x)),
+  );
 }
 
 function mapSections(project: Project, phase: PhaseId, fn: (list: Section[]) => Section[]): Project {

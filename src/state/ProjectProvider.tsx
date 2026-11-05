@@ -1,6 +1,7 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import type { Block, BlockType } from "@/content/blocks";
 import { DEMO_ID, DEMO_PROJECT, type ActivityStatus, type Project, type ProjectStatus, type Section } from "@/content/demo";
 import type { PhaseId } from "@/content/phases";
 import { today } from "@/lib/format";
@@ -9,9 +10,15 @@ import * as W from "./workspace";
 
 // ---------- Workspace: every project, saved to localStorage ----------
 
+export type SaveState = "saved" | "saving" | "error";
+/** How long to wait after the last change before writing to storage. */
+const SAVE_DELAY_MS = 500;
+
 type WorkspaceValue = {
   /** False until saved projects have been read from this browser. */
   loaded: boolean;
+  /** "saving" while a change waits to be written; "error" when the browser refused to store it. */
+  saveState: SaveState;
   projects: Project[];
   getProject: (id: string) => Project | undefined;
   updateProject: (id: string, fn: (p: Project) => Project) => void;
@@ -47,14 +54,42 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     setLoaded(true);
   }, []);
 
+  // Save shortly after changes stop, so typing does not write on every key.
+  const [saveState, setSaveState] = useState<SaveState>("saved");
+  const pending = useRef<W.Workspace | null>(null);
+  const flush = useCallback(() => {
+    const next = pending.current;
+    if (!next) return;
+    pending.current = null;
+    try {
+      localStorage.setItem(W.WORKSPACE_KEY, JSON.stringify(next));
+      setSaveState("saved");
+    } catch {
+      // Storage full or blocked: changes last for this visit only, and the page says so.
+      setSaveState("error");
+    }
+  }, []);
+
   useEffect(() => {
     if (!loaded) return;
-    try {
-      localStorage.setItem(W.WORKSPACE_KEY, JSON.stringify(ws));
-    } catch {
-      // Storage full or blocked: changes last for this visit only.
-    }
-  }, [ws, loaded]);
+    pending.current = ws;
+    setSaveState((s) => (s === "error" ? s : "saving"));
+    const t = window.setTimeout(flush, SAVE_DELAY_MS);
+    return () => window.clearTimeout(t);
+  }, [ws, loaded, flush]);
+
+  // Write anything still waiting when the tab is hidden or closed.
+  useEffect(() => {
+    const onHide = () => {
+      if (document.visibilityState === "hidden") flush();
+    };
+    window.addEventListener("pagehide", flush);
+    document.addEventListener("visibilitychange", onHide);
+    return () => {
+      window.removeEventListener("pagehide", flush);
+      document.removeEventListener("visibilitychange", onHide);
+    };
+  }, [flush]);
 
   const setProjects = useCallback((fn: (list: Project[]) => Project[]) => {
     setWs((w) => ({ ...w, projects: fn(w.projects) }));
@@ -75,6 +110,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
   const value = useMemo<WorkspaceValue>(
     () => ({
       loaded,
+      saveState,
       projects: ws.projects,
       workspace: ws,
       getProject: (id) => ws.projects.find((p) => p.id === id),
@@ -103,7 +139,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
             : [DEMO_PROJECT, ...list],
         ),
     }),
-    [loaded, ws, updateProject, setProjects],
+    [loaded, saveState, ws, updateProject, setProjects],
   );
 
   return <WorkspaceContext.Provider value={value}>{children}</WorkspaceContext.Provider>;
@@ -130,6 +166,11 @@ type ProjectValue = {
   renameSection: (phase: PhaseId, sectionId: string, title: string) => void;
   moveSection: (phase: PhaseId, sectionId: string, delta: -1 | 1) => void;
   deleteSection: (phase: PhaseId, sectionId: string) => void;
+  addBlock: (phase: PhaseId, sectionId: string, type: BlockType) => Block;
+  insertBlock: (phase: PhaseId, sectionId: string, block: Block, index: number) => void;
+  updateBlock: (phase: PhaseId, sectionId: string, blockId: string, fn: (b: Block) => Block) => void;
+  moveBlock: (phase: PhaseId, sectionId: string, blockId: string, to: number) => void;
+  deleteBlock: (phase: PhaseId, sectionId: string, blockId: string) => void;
 };
 
 const ProjectContext = createContext<ProjectValue | null>(null);
@@ -160,6 +201,15 @@ export function ProjectScope({ project, children }: { project: Project; children
       renameSection: (phase, sectionId, title) => update((p) => W.renameSection(p, phase, sectionId, title)),
       moveSection: (phase, sectionId, delta) => update((p) => W.moveSection(p, phase, sectionId, delta)),
       deleteSection: (phase, sectionId) => update((p) => W.deleteSection(p, phase, sectionId)),
+      addBlock: (phase, sectionId, type) => {
+        const [, block] = W.addBlock(project, phase, sectionId, type);
+        update((p) => W.insertBlock(p, phase, sectionId, block, Infinity));
+        return block;
+      },
+      insertBlock: (phase, sectionId, block, index) => update((p) => W.insertBlock(p, phase, sectionId, block, index)),
+      updateBlock: (phase, sectionId, blockId, fn) => update((p) => W.updateBlock(p, phase, sectionId, blockId, fn)),
+      moveBlock: (phase, sectionId, blockId, to) => update((p) => W.moveBlock(p, phase, sectionId, blockId, to)),
+      deleteBlock: (phase, sectionId, blockId) => update((p) => W.deleteBlock(p, phase, sectionId, blockId)),
     }),
     [project, update, resetDemo],
   );

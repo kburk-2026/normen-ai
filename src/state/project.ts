@@ -1,6 +1,7 @@
 import { PHASES, type PhaseId } from "@/content/phases";
 import { CHECKPOINTS } from "@/content/lifecycle";
-import { DEMO_PROJECT, allDefaultSections, PROJECT_STATUSES, type Project } from "@/content/demo";
+import { DEMO_PROJECT, OLD_SEED_TIME, SEED_TIME, allDefaultSections, PROJECT_STATUSES, type Project } from "@/content/demo";
+import { normalizeBlocks } from "@/content/blocks";
 
 export type PhaseState = "passed" | "current" | "locked";
 
@@ -57,8 +58,15 @@ export function toggleCheck(project: Project, criterionId: string): Project {
  * keep working. Anything missing falls back to an empty project, except that a
  * save with no ID is the original single demo project.
  */
+/** Saves from before milestone 8 stamp seeded data at midnight UTC, which reads as 3 Nov in the Americas. */
+function fromOldSeed(at: string | undefined) {
+  return at === OLD_SEED_TIME ? SEED_TIME : at;
+}
+
 export function normalizeProject(saved: Partial<Project>): Project {
-  const sections = { ...allDefaultSections(), ...(saved.sections ?? {}) };
+  const base = saved.id ? undefined : DEMO_PROJECT;
+  // A save with no ID is the phase 1 demo: it gets the demo's written pages.
+  const sections = { ...(base?.sections ?? allDefaultSections()), ...(saved.sections ?? {}) };
   for (const phase of PHASES) {
     // Every phase keeps its Overview and Checklist, whatever a backup says.
     const list = sections[phase.id] ?? [];
@@ -69,9 +77,17 @@ export function normalizeProject(saved: Partial<Project>): Project {
       ...(hasOverview ? [] : [defaults[0]]),
       ...(hasChecklist ? [] : [defaults[1]]),
       ...list,
-    ];
+    ].map((x) => {
+      // Demo pages saved before blocks existed, and never edited, get the demo's written content.
+      const seeded = DEMO_PROJECT.sections[phase.id].find((d) => d.id === x.id);
+      const untouched = (saved.isDemo || !saved.id) && seeded && !x.blocks?.length && [seeded.updatedAt, OLD_SEED_TIME].includes(x.updatedAt);
+      return {
+        ...x,
+        blocks: normalizeBlocks(untouched ? seeded.blocks : x.blocks),
+        updatedAt: fromOldSeed(x.updatedAt) ?? new Date().toISOString(),
+      };
+    });
   }
-  const base = saved.id ? undefined : DEMO_PROJECT;
   return {
     id: saved.id ?? DEMO_PROJECT.id,
     name: saved.name ?? base?.name ?? "Untitled project",
@@ -81,7 +97,7 @@ export function normalizeProject(saved: Partial<Project>): Project {
       : (base?.status ?? "Draft"),
     isDemo: saved.isDemo ?? !saved.id,
     createdAt: saved.createdAt ?? base?.createdAt ?? new Date().toISOString(),
-    updatedAt: saved.updatedAt ?? base?.updatedAt ?? new Date().toISOString(),
+    updatedAt: fromOldSeed(saved.updatedAt) ?? base?.updatedAt ?? new Date().toISOString(),
     activities: saved.activities ?? {},
     checks: saved.checks ?? {},
     passed: saved.passed ?? [],

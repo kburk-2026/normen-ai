@@ -128,6 +128,16 @@ Milestones (a mockup before each, Karen approves before any push):
 8. Block editor core: Add a block picker; Text, Callout, Divider, Table;
    reorder (drag and keyboard), delete, autosave; Edit/View switch; blocks
    included in Markdown and PDF export.
+   **Done.** Types and repair in `src/content/blocks.ts`; block rules in
+   `src/state/workspace.ts`; UI in `src/components/blocks/` (BlockEditor,
+   BlockContent, BlockPicker). Tones: Note, Warning, Decision. Move by drag
+   (wide screens), arrow buttons or Alt + Up/Down; delete shows Undo for 8
+   seconds. Edit/View is per browser (`normen:mode`); a new section opens in
+   Edit. The workspace saves 500 ms after changes stop and on tab hide;
+   storage errors show on the section page. The picker lists milestones 9-11
+   blocks as "coming". Demo overviews for Conceive, Plan and Develop have
+   blocks; untouched demo pages in older saves get them on load. Seed time is
+   noon UTC so dates read 4 Nov everywhere; dates show in local time.
 9. Governance blocks: Decision Log, Approval Tracker, Timeline, SWOT.
 10. AI blocks: Risk Register, Model Card, Data Sources.
 11. Media blocks: Image, Video, File/Link (URLs only).
@@ -147,4 +157,4 @@ Milestones (a mockup before each, Karen approves before any push):
   automatically.
 - Commit as `343284727+kburk-2026@users.noreply.github.com` (set in this repo's
   git config); GitHub rejects pushes that expose the private email.
-- Phase 1 is complete. Phase 2 milestone 7 is done. Next: milestone 8 (block editor core).
+- Phase 1 is complete. Phase 2 milestones 7 and 8 are done. Next: milestone 9 (governance blocks).

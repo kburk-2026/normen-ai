@@ -14,6 +14,13 @@ export type ShippedEntry = {
 export const SHIPPED: ShippedEntry[] = [
   {
     date: "2026-11-04",
+    kind: "Milestone",
+    label: "Milestone 8",
+    title: "Write in every phase",
+    body: "Overview and your own sections now hold blocks: text, callouts, dividers and tables. Move them by dragging or with Alt + arrow keys, undo a delete, and switch between Edit and View. Everything saves as you type and appears in the Markdown and PDF exports.",
+  },
+  {
+    date: "2026-11-04",
     kind: "Design",
     label: "Design",
     title: "Norm in your browser tab",

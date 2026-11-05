@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { IconDownload } from "@tabler/icons-react";
+import { today } from "@/lib/format";
 import Dialog, { inputClass, primaryButton, quietButton } from "@/components/ui/Dialog";
 import type { Project, ProjectStatus } from "@/content/demo";
 import type { Workspace } from "@/state/workspace";
@@ -15,7 +16,7 @@ export const STATUS_STYLE: Record<ProjectStatus, string> = {
 
 /** Download every project as one JSON file. */
 export function downloadBackup(ws: Workspace) {
-  const stamp = new Date().toISOString().slice(0, 10);
+  const stamp = today();
   const blob = new Blob([JSON.stringify(ws, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");

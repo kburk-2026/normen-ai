@@ -19,7 +19,7 @@ import Menu from "@/components/ui/Menu";
 import { PHASES, STAGES } from "@/content/phases";
 import { ACTIVITIES } from "@/content/lifecycle";
 import { PROJECT_STATUSES, type Project, type ProjectStatus } from "@/content/demo";
-import { formatDate } from "@/lib/format";
+import { formatDate, localDay } from "@/lib/format";
 import { useWorkspace } from "@/state/ProjectProvider";
 import { currentPhaseIndex, parseWorkspace, type Workspace } from "@/state/workspace";
 import { DeleteProjectDialog, ProjectFormDialog, RestoreDialog, STATUS_STYLE, downloadBackup } from "./ProjectDialogs";
@@ -257,7 +257,7 @@ function ProjectCard({
         <span>
           {done}/{ACTIVITIES.length} activities
         </span>
-        <span>Updated {formatDate(p.updatedAt.slice(0, 10))}</span>
+        <span>Updated {formatDate(localDay(p.updatedAt))}</span>
       </p>
     </li>
   );
