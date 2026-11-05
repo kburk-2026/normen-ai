@@ -14,6 +14,13 @@ export type ShippedEntry = {
 export const SHIPPED: ShippedEntry[] = [
   {
     date: "2026-11-04",
+    kind: "Design",
+    label: "Design",
+    title: "Norm in your browser tab",
+    body: "The browser tab and home screen icon is now Norm, waving.",
+  },
+  {
+    date: "2026-11-04",
     kind: "Milestone",
     label: "Milestone 7",
     title: "Projects",

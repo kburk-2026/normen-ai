@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
+  <!-- Norm, waving (same drawing as src/components/Mascot.tsx), on the canvas color -->
+  <rect width="80" height="80" rx="18" fill="#2A2925"/>
+  <g transform="translate(40 40) scale(1.1) translate(-40 -36.5)">
+    <line x1="40" y1="9" x2="40" y2="19" stroke="#C2AE94" stroke-width="3"/>
+    <circle cx="40" cy="8" r="5" fill="#D67B37"/>
+    <rect x="14" y="18" width="52" height="46" rx="18" fill="#D67B37"/>
+    <rect x="22" y="29" width="36" height="20" rx="10" fill="#2A2925"/>
+    <circle cx="33" cy="39" r="4" fill="#A9BCC4"/>
+    <path d="M43 39 Q47 35 51 39" stroke="#A9BCC4" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M33 55 Q40 60 47 55" stroke="#2A1606" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <rect x="24" y="64" width="10" height="6" rx="3" fill="#C2AE94"/>
+    <rect x="46" y="64" width="10" height="6" rx="3" fill="#C2AE94"/>
+  </g>
+</svg>
