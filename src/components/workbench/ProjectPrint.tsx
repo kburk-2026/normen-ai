@@ -6,7 +6,17 @@ import { useProject } from "@/state/ProjectProvider";
 import { openCriteria, overrideFor } from "@/state/project";
 import { phaseLabel } from "@/lib/exportProject";
 import { formatDate, today } from "@/lib/format";
-import { CALLOUT_LABEL, isEmptyBlock, type Block } from "@/content/blocks";
+import {
+  CALLOUT_LABEL,
+  SWOT_KEYS,
+  SWOT_LABEL,
+  filledApprovals,
+  filledDecisions,
+  filledItems,
+  filledMilestones,
+  isEmptyBlock,
+  type Block,
+} from "@/content/blocks";
 
 const MARK = { done: "☑", doing: "◐", todo: "☐" } as const;
 
@@ -93,32 +103,95 @@ function PrintBlocks({ blocks }: { blocks: Block[] }) {
               <span className="font-medium">{CALLOUT_LABEL[b.tone]}:</span> {b.text}
             </p>
           );
-        const [head, ...body] = b.rows;
-        return (
-          <table key={b.id} className="w-full break-inside-avoid border-collapse text-[10pt]">
-            <thead>
-              <tr>
-                {head.map((c, i) => (
-                  <th key={i} scope="col" className="border border-neutral-400 px-1.5 py-0.5 text-left font-medium">
-                    {c}
-                  </th>
+        if (b.type === "table") return <PrintTable key={b.id} rows={b.rows} />;
+        if (b.type === "decision")
+          return (
+            <PrintTitled key={b.id} title="Decision Log">
+              <PrintTable
+                rows={[
+                  ["Decision", "Date", "Made by", "Why", "Status"],
+                  ...filledDecisions(b).map((r) => [r.decision, r.date ? formatDate(r.date) : "", r.by, r.why, r.status]),
+                ]}
+              />
+            </PrintTitled>
+          );
+        if (b.type === "approval") {
+          const rows = filledApprovals(b);
+          return (
+            <PrintTitled key={b.id} title={`Approval Tracker · ${rows.filter((r) => r.status === "Approved").length} of ${rows.length} approved`}>
+              <PrintTable
+                rows={[["Approval", "Approver", "Date", "Status"], ...rows.map((r) => [r.item, r.who, r.date ? formatDate(r.date) : "", r.status])]}
+              />
+            </PrintTitled>
+          );
+        }
+        if (b.type === "timeline")
+          return (
+            <PrintTitled key={b.id} title="Timeline">
+              <ul>
+                {filledMilestones(b).map((m) => (
+                  <li key={m.id}>
+                    {m.done ? "☑" : "☐"} <span className="text-neutral-600">{m.date ? formatDate(m.date) : "No date"}:</span> {m.text}
+                  </li>
                 ))}
-              </tr>
-            </thead>
-            <tbody>
-              {body.map((r, ri) => (
-                <tr key={ri}>
-                  {r.map((c, ci) => (
-                    <td key={ci} className="whitespace-pre-line border border-neutral-400 px-1.5 py-0.5 align-top">
-                      {c}
-                    </td>
-                  ))}
-                </tr>
+              </ul>
+            </PrintTitled>
+          );
+        return (
+          <PrintTitled key={b.id} title="SWOT">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
+              {SWOT_KEYS.map((k) => (
+                <div key={k} className="break-inside-avoid">
+                  <p className="font-medium">{SWOT_LABEL[k].name}</p>
+                  <ul className="list-disc pl-4">
+                    {filledItems(b[k]).map((x, i) => (
+                      <li key={i}>{x}</li>
+                    ))}
+                  </ul>
+                </div>
               ))}
-            </tbody>
-          </table>
+            </div>
+          </PrintTitled>
         );
       })}
     </div>
+  );
+}
+
+function PrintTitled({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="break-inside-avoid">
+      <p className="font-medium">{title}</p>
+      <div className="mt-0.5">{children}</div>
+    </div>
+  );
+}
+
+/** A bordered table; row 0 is the header. */
+function PrintTable({ rows }: { rows: string[][] }) {
+  const [head, ...body] = rows;
+  return (
+    <table className="w-full break-inside-avoid border-collapse text-[10pt]">
+      <thead>
+        <tr>
+          {head.map((c, i) => (
+            <th key={i} scope="col" className="border border-neutral-400 px-1.5 py-0.5 text-left font-medium">
+              {c}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {body.map((r, ri) => (
+          <tr key={ri}>
+            {r.map((c, ci) => (
+              <td key={ci} className="whitespace-pre-line border border-neutral-400 px-1.5 py-0.5 align-top">
+                {c}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 }

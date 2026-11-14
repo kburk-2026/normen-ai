@@ -10,7 +10,16 @@ import type { PhaseId } from "@/content/phases";
 import type { Mode } from "@/state/editMode";
 import { useProject } from "@/state/ProjectProvider";
 
-const NAME: Record<Block["type"], string> = { text: "Text", callout: "Callout", divider: "Divider", table: "Table" };
+const NAME: Record<Block["type"], string> = {
+  text: "Text",
+  callout: "Callout",
+  divider: "Divider",
+  table: "Table",
+  decision: "Decision Log",
+  approval: "Approval Tracker",
+  timeline: "Timeline",
+  swot: "SWOT",
+};
 const UNDO_MS = 8000;
 
 /** The blocks of one section: an editor in Edit mode, the finished page in View mode. */

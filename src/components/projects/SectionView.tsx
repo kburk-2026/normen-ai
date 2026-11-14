@@ -139,8 +139,11 @@ function EditableTitle({ phase, section }: { phase: PhaseId; section: Section })
   };
 
   return (
-    <label className="mt-3 block">
-      <span className="sr-only">Section title</span>
+    <>
+      {/* The input is the visible title; screen readers still get a page heading. */}
+      <h1 className="sr-only">{section.title || "Untitled section"}</h1>
+      <label className="mt-3 block">
+        <span className="sr-only">Section title</span>
       <input
         ref={input}
         value={value}
@@ -157,5 +160,6 @@ function EditableTitle({ phase, section }: { phase: PhaseId; section: Section })
         className="w-full rounded-lg bg-transparent font-display text-3xl font-medium tracking-tight text-ink hover:bg-surface focus:bg-surface focus:outline-none"
       />
     </label>
+    </>
   );
 }

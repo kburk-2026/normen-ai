@@ -1,7 +1,17 @@
 import { PHASES, type PhaseId } from "@/content/phases";
 import { ACTIVITIES, CHECKPOINTS } from "@/content/lifecycle";
 import type { ActivityStatus, Project } from "@/content/demo";
-import { CALLOUT_LABEL, isEmptyBlock, type Block } from "@/content/blocks";
+import {
+  CALLOUT_LABEL,
+  SWOT_KEYS,
+  SWOT_LABEL,
+  filledApprovals,
+  filledDecisions,
+  filledItems,
+  filledMilestones,
+  isEmptyBlock,
+  type Block,
+} from "@/content/blocks";
 import { openCriteria, overrideFor, phaseState } from "@/state/project";
 import { formatDate } from "./format";
 
@@ -73,6 +83,14 @@ function lines(text: string) {
 
 const cell = (c: string) => c.trim().replace(/\|/g, "\\|").replace(/\n/g, "<br>") || " ";
 
+const dateOr = (d: string, none = "") => (d ? formatDate(d) : none);
+
+/** A Markdown table; row 0 is the header. */
+function table(rows: string[][]): string[] {
+  const [head, ...body] = rows;
+  return [`| ${head.map(cell).join(" | ")} |`, `| ${head.map(() => "---").join(" | ")} |`, ...body.map((r) => `| ${r.map(cell).join(" | ")} |`)];
+}
+
 /** A section's blocks as Markdown lines, with a blank line between blocks. Empty blocks are skipped. */
 export function blocksToMarkdown(blocks: Block[]): string[] {
   const out: string[] = [];
@@ -83,10 +101,27 @@ export function blocksToMarkdown(blocks: Block[]): string[] {
       const [first, ...rest] = lines(b.text);
       out.push(`> **${CALLOUT_LABEL[b.tone]}:** ${first}`, ...rest.map((l) => (l ? `> ${l}` : ">")));
     } else if (b.type === "divider") out.push("---");
-    else {
-      const [head, ...body] = b.rows;
-      out.push(`| ${head.map(cell).join(" | ")} |`, `| ${head.map(() => "---").join(" | ")} |`);
-      for (const r of body) out.push(`| ${r.map(cell).join(" | ")} |`);
+    else if (b.type === "table") out.push(...table(b.rows));
+    else if (b.type === "decision") {
+      const rows = filledDecisions(b).map((r) => [r.decision, dateOr(r.date), r.by, r.why, r.status]);
+      out.push("**Decision Log**", "", ...table([["Decision", "Date", "Made by", "Why", "Status"], ...rows]));
+    } else if (b.type === "approval") {
+      const rows = filledApprovals(b);
+      const approved = rows.filter((r) => r.status === "Approved").length;
+      out.push(
+        `**Approval Tracker** (${approved} of ${rows.length} approved)`,
+        "",
+        ...table([["Approval", "Approver", "Date", "Status"], ...rows.map((r) => [r.item, r.who, dateOr(r.date), r.status])]),
+      );
+    } else if (b.type === "timeline") {
+      out.push("**Timeline**", "");
+      for (const m of filledMilestones(b)) out.push(`- ${m.done ? "[x]" : "[ ]"} ${dateOr(m.date, "No date")}: ${m.text.trim()}`);
+    } else {
+      out.push("**SWOT**");
+      for (const k of SWOT_KEYS) {
+        const items = filledItems(b[k]);
+        out.push("", `*${SWOT_LABEL[k].name}*`, "", ...(items.length ? items.map((x) => `- ${x.trim().replace(/\n/g, " ")}`) : ["- Nothing listed."]));
+      }
     }
   }
   return out;

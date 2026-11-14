@@ -184,5 +184,48 @@ function demoSections(): Record<PhaseId, Section[]> {
   for (const [phase, list] of Object.entries(blocks) as [PhaseId, Block[]][]) {
     s[phase] = s[phase].map((x) => (x.kind === "overview" ? { ...x, blocks: list } : x));
   }
+  s.plan.push({ id: "plan-governance", kind: "custom", title: "Governance", blocks: governanceBlocks(), updatedAt: SEED_TIME });
   return s;
+}
+
+/** The demo's Governance page in Plan: one of each governance block. (A function, so it exists when DEMO_PROJECT is built above.) */
+function governanceBlocks(): Block[] {
+  return [
+  {
+    id: "b-g1",
+    type: "decision",
+    rows: [
+      { id: "r1", decision: "AI flags, people decide", date: "2026-10-07", by: "Head of Finance", why: "A wrong rejection costs more trust than a slow one.", status: "Made" },
+      { id: "r2", decision: "Start data prep before the privacy review closes", date: "2026-10-21", by: "Sponsor", why: "Anonymized claims only. Logged as a checkpoint override.", status: "Made" },
+      { id: "r3", decision: "Flag threshold for the pilot", date: "", by: "", why: "", status: "Open" },
+    ],
+  },
+  {
+    id: "b-g2",
+    type: "approval",
+    rows: [
+      { id: "r1", item: "Build budget", who: "Head of Finance", date: "2026-10-20", status: "Approved" },
+      { id: "r2", item: "Privacy review (C-202)", who: "Legal", date: "", status: "Pending" },
+      { id: "r3", item: "Access to claims history", who: "IT security", date: "", status: "On hold" },
+    ],
+  },
+  {
+    id: "b-g3",
+    type: "timeline",
+    items: [
+      { id: "r1", text: "Requirements approved", date: "2026-10-21", done: true },
+      { id: "r2", text: "Privacy review signed off", date: "2026-11-13", done: false },
+      { id: "r3", text: "Prototype demo to sponsor", date: "2026-12-04", done: false },
+      { id: "r4", text: "Pilot starts", date: "", done: false },
+    ],
+  },
+  {
+    id: "b-g4",
+    type: "swot",
+    s: ["18 months of labeled claims", "Finance sponsor is engaged"],
+    w: ["One analyst owns the pipeline"],
+    o: ["The same model could triage invoices"],
+    t: ["Policy changes shift what counts as unusual"],
+  },
+];
 }

@@ -139,6 +139,15 @@ Milestones (a mockup before each, Karen approves before any push):
    blocks; untouched demo pages in older saves get them on load. Seed time is
    noon UTC so dates read 4 Nov everywhere; dates show in local time.
 9. Governance blocks: Decision Log, Approval Tracker, Timeline, SWOT.
+   **Done.** Types in `src/content/blocks.ts`, UI in
+   `src/components/blocks/GovernanceBlocks.tsx`. Statuses follow the PD
+   Playbook: decisions Open, Made, On hold, Superseded; approvals Pending,
+   Approved, Rejected, On hold. Timeline milestones have a Done tick (Karen
+   approved) and re-sort by date when the date field loses focus. Blank rows
+   show only in Edit; View and exports skip them. Removing a row has no undo.
+   These blocks are a record only and never tick checkpoint criteria. The
+   demo's Plan phase has a seeded "Governance" section (`plan-governance`);
+   older saves get it only through Reset demo.
 10. AI blocks: Risk Register, Model Card, Data Sources.
 11. Media blocks: Image, Video, File/Link (URLs only).
 12. Tools menu: backup and restore, project changelog, status, keyboard
@@ -150,6 +159,15 @@ Milestones (a mockup before each, Karen approves before any push):
 17. Timeline view in the Workbench (uses checkpoint pass dates).
 18. Curriculum Program Designer case study (needs Karen's material).
 
+## Local setup note
+
+The project folder is in iCloud Drive, which offloads `node_modules` and makes
+the dev server and git hang. `node_modules` and `.next` are therefore links to
+`node_modules.nosync` and `.next.nosync` (iCloud skips `.nosync`; both are
+git-ignored and excluded in `tsconfig.json`). After `npm ci`, which replaces
+the link with a real folder, run:
+`mv node_modules node_modules.nosync && ln -s node_modules.nosync node_modules`.
+
 ## Status (2026-11-04)
 
 - Pushed to `kburk-2026/normen-ai` (main). CI passes on every push.
@@ -157,4 +175,4 @@ Milestones (a mockup before each, Karen approves before any push):
   automatically.
 - Commit as `343284727+kburk-2026@users.noreply.github.com` (set in this repo's
   git config); GitHub rejects pushes that expose the private email.
-- Phase 1 is complete. Phase 2 milestones 7 and 8 are done. Next: milestone 9 (governance blocks).
+- Phase 1 is complete. Phase 2 milestones 7 to 9 are done. Next: milestone 10 (AI blocks).

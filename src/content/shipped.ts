@@ -13,6 +13,13 @@ export type ShippedEntry = {
 
 export const SHIPPED: ShippedEntry[] = [
   {
+    date: "2026-11-14",
+    kind: "Milestone",
+    label: "Milestone 9",
+    title: "Governance blocks",
+    body: "Four new blocks for the record of a project: a Decision Log, an Approval Tracker, a Timeline that sorts itself by date, and a SWOT. The demo's Plan phase has a Governance page showing all four.",
+  },
+  {
     date: "2026-11-04",
     kind: "Milestone",
     label: "Milestone 8",
