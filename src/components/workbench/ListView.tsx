@@ -44,7 +44,7 @@ function PhaseCard({
     <li>
       <details
         open={state === "current" || justPassed}
-        className={`group rounded-2xl border-l-[3px] bg-surface ${STAGES[phase.stages[0]].strip}`}
+        className={`group rounded-2xl border-l-[3px] bg-surface ${phase.strip}`}
       >
         <summary className="flex cursor-pointer list-none flex-wrap items-center gap-3 rounded-2xl px-5 py-4 [&::-webkit-details-marker]:hidden">
           <span className="font-mono text-xs text-faint" aria-hidden>

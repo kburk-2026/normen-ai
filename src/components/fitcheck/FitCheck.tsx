@@ -157,7 +157,7 @@ function Result({ answers, onStartOver }: { answers: Record<string, number>; onS
             href="/workbench"
             className="inline-flex items-center gap-2 rounded-full bg-orange px-4 py-2 text-sm font-medium text-orange-ink transition-colors hover:bg-orange-soft"
           >
-            Open the Workbench <IconArrowRight size={16} aria-hidden />
+            Open the Project Console <IconArrowRight size={16} aria-hidden />
           </Link>
         )}
         <button

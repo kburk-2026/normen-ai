@@ -1,6 +1,6 @@
 import ProjectsHub from "@/components/projects/ProjectsHub";
 
-export const metadata = { title: "Projects · Normen AI" };
+export const metadata = { title: "Project Console · Normen AI" };
 
 export default function Page() {
   return (

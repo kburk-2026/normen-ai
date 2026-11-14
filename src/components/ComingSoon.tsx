@@ -27,7 +27,7 @@ export default function ComingSoon({
           <p className="text-sm">Norm is still building this one.</p>
           <p className="mt-1 font-mono text-xs text-faint">Arrives in {milestone}</p>
           <Link href="/" className="mt-3 inline-block text-sm text-orange hover:text-orange-soft">
-            Back to Overview
+            Back to Home
           </Link>
         </div>
       </div>

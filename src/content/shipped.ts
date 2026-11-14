@@ -14,6 +14,13 @@ export type ShippedEntry = {
 export const SHIPPED: ShippedEntry[] = [
   {
     date: "2026-11-14",
+    kind: "Design",
+    label: "Design",
+    title: "Home, Project Console and phase colors",
+    body: "Overview is now Home and the Workbench is now the Project Console. The top menu is down to Home, Console and Pulse; Guardrails, Scorecard and the Field Guide are a click away from Home. Each of the seven phases has its own color, so they are easy to tell apart.",
+  },
+  {
+    date: "2026-11-14",
     kind: "Fix",
     label: "Fix",
     title: "New demo pages reach returning visitors",

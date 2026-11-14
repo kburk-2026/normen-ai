@@ -90,7 +90,7 @@ export default function Page() {
             key={phase.id}
             id={phase.id}
             aria-labelledby={`${phase.id}-title`}
-            className={`mt-12 scroll-mt-24 border-l-[3px] pl-5 ${STAGES[phase.stages[0]].strip}`}
+            className={`mt-12 scroll-mt-24 border-l-[3px] pl-5 ${phase.strip}`}
           >
             <p className="font-mono text-xs text-faint">Phase 0{phase.number}</p>
             <h2 id={`${phase.id}-title`} className="font-display text-2xl font-medium">

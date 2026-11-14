@@ -16,7 +16,7 @@ import {
 } from "@tabler/icons-react";
 import Mascot from "@/components/Mascot";
 import Menu from "@/components/ui/Menu";
-import { PHASES, STAGES } from "@/content/phases";
+import { PHASES } from "@/content/phases";
 import { ACTIVITIES } from "@/content/lifecycle";
 import { PROJECT_STATUSES, type Project, type ProjectStatus } from "@/content/demo";
 import { formatDate, localDay } from "@/lib/format";
@@ -56,7 +56,7 @@ export default function ProjectsHub() {
     <>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-3xl font-medium tracking-tight">Projects</h1>
+          <h1 className="font-display text-3xl font-medium tracking-tight">Project Console</h1>
           <p className="mt-1 text-muted">Every AI project you are taking through the lifecycle.</p>
         </div>
         <div className="flex flex-wrap items-center gap-2 text-sm">
@@ -222,7 +222,7 @@ function ProjectCard({
   const done = ACTIVITIES.filter((a) => p.activities[a.id] === "done").length;
 
   return (
-    <li className={`relative rounded-2xl border-t-[3px] bg-surface p-5 ${STAGES[phase.stages[0]].strip}`}>
+    <li className={`relative rounded-2xl border-t-[3px] bg-surface p-5 ${phase.strip}`}>
       <div className="flex items-start justify-between gap-2">
         <span className={`rounded-full px-2.5 py-0.5 text-xs ${STATUS_STYLE[p.status]}`}>{p.status}</span>
         <Menu

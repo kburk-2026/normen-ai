@@ -31,7 +31,9 @@ Supabase only in phase 3. Everything must stay on free tiers: no paid AI APIs.
 - Name: "normen" wordmark (Bricolage Grotesque) with a small steel-blue "AI" pill.
 - Type: Bricolage Grotesque headings, IBM Plex Sans body, IBM Plex Mono for IDs.
 - Colors (tokens in `src/app/globals.css`): warm charcoal canvas #2A2925, surface
-  #3A3933, orange #D67B37, steel blue #6E8590, tan #C2AE94.
+  #3A3933, orange #D67B37, steel blue #6E8590, tan #C2AE94. Each phase has its
+  own color (`--color-phase-*`, from Karen's palette, 2026-11-14) used for phase
+  strips via `Phase.strip`; the AI stage tags keep orange, steel, tan and ink.
 - Icons: Tabler (`@tabler/icons-react`), outline style.
 - Norm, the mascot (`src/components/Mascot.tsx`), is used sparingly: onboarding,
   empty states, Fit Check results and checkpoints. Never inside the Workbench views.
@@ -43,8 +45,11 @@ Supabase only in phase 3. Everything must stay on free tiers: no paid AI APIs.
 
 ## Sections
 
-Overview, Workbench (list view with a board toggle), Fit Check, Guardrails,
+Home (route `/`), Project Console (route `/workbench`, "Console" in the top menu; list view with a board toggle), Fit Check, Guardrails,
 Scorecard, Pulse, Field Guide, Shipped. Exit criteria are "Checkpoints."
+The top menu holds only Home, Console and Pulse (Karen, 2026-11-14); Guardrails,
+Scorecard and Field Guide are reached from Home and the footer. Code still
+names the Console "Workbench" (components, routes).
 
 ## Phase 1 milestones
 

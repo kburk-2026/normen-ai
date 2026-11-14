@@ -12,13 +12,13 @@ import { PHASES, STAGES } from "@/content/phases";
 import type { IconComponent } from "@/content/types";
 
 const FEATURES: { href: string; title: string; blurb: string; icon: IconComponent; tone: string }[] = [
-  { href: "/workbench", title: "Workbench", blurb: "List and board views of every phase", icon: IconLayoutKanban, tone: "text-orange" },
+  { href: "/workbench", title: "Project Console", blurb: "List and board views of every phase", icon: IconLayoutKanban, tone: "text-orange" },
   { href: "/guardrails", title: "Guardrails", blurb: "Privacy, bias and human review", icon: IconShieldCheck, tone: "text-steel-soft" },
   { href: "/scorecard", title: "Scorecard", blurb: "Evaluation metrics and targets", icon: IconGauge, tone: "text-tan" },
   { href: "/pulse", title: "Pulse", blurb: "Drift, feedback and incidents", icon: IconHeartbeat, tone: "text-ink" },
 ];
 
-export default function OverviewPage() {
+export default function HomePage() {
   return (
     <>
       <section className="mx-auto grid max-w-6xl items-center gap-10 px-5 pb-12 pt-16 md:grid-cols-[1.5fr_1fr]">
@@ -35,7 +35,7 @@ export default function OverviewPage() {
               href="/workbench"
               className="inline-flex items-center gap-2 rounded-full bg-orange px-5 py-2.5 font-medium text-orange-ink transition-colors hover:bg-orange-soft"
             >
-              Open the Workbench <IconArrowRight size={16} aria-hidden />
+              Open the Project Console <IconArrowRight size={16} aria-hidden />
             </Link>
             <Link
               href="/field-guide"
@@ -70,7 +70,7 @@ export default function OverviewPage() {
           {PHASES.map((phase) => {
             const Icon = phase.icon;
             return (
-              <li key={phase.id} className={`border-t-[3px] pt-3 ${STAGES[phase.stages[0]].strip}`}>
+              <li key={phase.id} className={`border-t-[3px] pt-3 ${phase.strip}`}>
                 <span className="font-mono text-xs text-faint">0{phase.number}</span>
                 <p className="mt-1 flex items-center gap-1.5 text-sm font-medium">
                   <Icon size={16} stroke={1.75} aria-hidden />
@@ -81,7 +81,7 @@ export default function OverviewPage() {
             );
           })}
         </ol>
-        <ul className="mt-6 flex flex-wrap gap-4 text-xs text-muted" aria-label="AI stage colors">
+        <ul className="mt-6 flex flex-wrap gap-4 text-xs text-muted" aria-label="AI stages">
           {Object.values(STAGES).map((stage) => {
             const Icon = stage.icon;
             return (

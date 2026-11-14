@@ -156,7 +156,7 @@ export const FIT_QUESTIONS: FitQuestion[] = [
 export type FitBand = "good" | "simpler" | "no";
 
 export const FIT_BANDS: Record<FitBand, { min: number; title: string; body: string }> = {
-  good: { min: 70, title: "Good fit for AI", body: "This problem has what AI needs. Take it to the Workbench and start with Conceive." },
+  good: { min: 70, title: "Good fit for AI", body: "This problem has what AI needs. Take it to the Project Console and start with Conceive." },
   simpler: { min: 40, title: "Try rules or automation first", body: "AI could help, but a simpler fix may get you most of the way for less." },
   no: { min: 0, title: "AI isn't the answer here", body: "The problem lacks what AI needs to work well. Look at a process change instead." },
 };

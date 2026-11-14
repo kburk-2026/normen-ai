@@ -73,8 +73,10 @@ export type Phase = {
   number: number;
   name: string;
   icon: IconComponent;
-  /** AI stages this phase draws on. The first one sets the phase's color. */
+  /** AI stages this phase draws on. */
   stages: StageId[];
+  /** Tailwind border class in the phase's own color (tokens in globals.css). */
+  strip: string;
   summary: string;
 };
 
@@ -89,6 +91,7 @@ export const PHASES: Phase[] = [
     name: "Conceive",
     icon: IconBulb,
     stages: ["ideation"],
+    strip: "border-phase-conceive",
     summary: "Confirm the problem, decide whether AI belongs in the answer, and form the team.",
   },
   {
@@ -97,6 +100,7 @@ export const PHASES: Phase[] = [
     name: "Plan",
     icon: IconMap2,
     stages: ["ideation", "data"],
+    strip: "border-phase-plan",
     summary: "Set data, functional and model requirements, then win approval to build.",
   },
   {
@@ -105,6 +109,7 @@ export const PHASES: Phase[] = [
     name: "Develop",
     icon: IconCode,
     stages: ["data", "rnd"],
+    strip: "border-phase-develop",
     summary: "Run model experiments, guard the MVP from scope creep, and prototype.",
   },
   {
@@ -113,6 +118,7 @@ export const PHASES: Phase[] = [
     name: "Qualify",
     icon: IconChecklist,
     stages: ["rnd", "deployment"],
+    strip: "border-phase-qualify",
     summary: "Prove lab results hold up with real users before launch.",
   },
   {
@@ -121,6 +127,7 @@ export const PHASES: Phase[] = [
     name: "Launch",
     icon: IconRocket,
     stages: ["deployment"],
+    strip: "border-phase-launch",
     summary: "Release, often as a soft launch to a small group first.",
   },
   {
@@ -129,6 +136,7 @@ export const PHASES: Phase[] = [
     name: "Deliver",
     icon: IconTruckDelivery,
     stages: ["deployment"],
+    strip: "border-phase-deliver",
     summary: "Run it in production, watch for drift, and keep improving.",
   },
   {
@@ -137,6 +145,7 @@ export const PHASES: Phase[] = [
     name: "Retire",
     icon: IconArchive,
     stages: ["deployment"],
+    strip: "border-phase-retire",
     summary: "Decommission cleanly, including the data and the model.",
   },
 ];

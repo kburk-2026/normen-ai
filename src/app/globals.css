@@ -21,6 +21,15 @@
   --color-tan: #c2ae94;
   --color-tan-soft: #d8c8b1;
   --color-tan-bg: #3f382e;
+
+  /* One color per lifecycle phase (palette approved by Karen 2026-11-14). */
+  --color-phase-conceive: #f29646;
+  --color-phase-plan: #31a7b2;
+  --color-phase-develop: #03af57;
+  --color-phase-qualify: #cec2c2;
+  --color-phase-launch: #f7c091;
+  --color-phase-deliver: #a3dfe5;
+  --color-phase-retire: #9b8282;
 }
 
 @theme inline {
