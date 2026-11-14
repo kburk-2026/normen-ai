@@ -42,13 +42,18 @@ const GROUPS: { name: string; items: Pick[] }[] = [
       { type: "swot", label: "SWOT", hint: "Strengths, weaknesses, opportunities, threats", icon: IconLayoutGrid },
     ],
   },
+  {
+    name: "AI",
+    items: [
+      { type: "risk", label: "Risk Register", hint: "What could go wrong, and the plan", icon: IconShieldCheck },
+      { type: "modelcard", label: "Model Card", hint: "What the model is for, and its limits", icon: IconFileDescription },
+      { type: "sources", label: "Data Sources", hint: "Where the data comes from, and who owns it", icon: IconDatabase },
+    ],
+  },
 ];
 
 /** Blocks on the phase 2 plan, shown so people know what is coming. */
 const LATER = [
-  { label: "Risk Register", icon: IconShieldCheck, m: 10 },
-  { label: "Model Card", icon: IconFileDescription, m: 10 },
-  { label: "Data Sources", icon: IconDatabase, m: 10 },
   { label: "Image", icon: IconPhoto, m: 11 },
   { label: "Video", icon: IconVideo, m: 11 },
   { label: "File or link", icon: IconLink, m: 11 },

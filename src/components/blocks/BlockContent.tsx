@@ -2,6 +2,7 @@
 
 import { IconAlertTriangle, IconCircleCheck, IconInfoCircle, IconMinus, IconPlus } from "@tabler/icons-react";
 import AutoTextarea from "@/components/ui/AutoTextarea";
+import { DataSources, ModelCard, RiskRegister } from "./AiBlocks";
 import { ApprovalTracker, DecisionLog, Swot, Timeline } from "./GovernanceBlocks";
 import { CALLOUT_LABEL, CALLOUT_TONES, type Block, type CalloutTone, type TableBlock } from "@/content/blocks";
 import type { Mode } from "@/state/editMode";
@@ -85,6 +86,9 @@ export default function BlockContent({
   if (b.type === "approval") return <ApprovalTracker block={b} edit={edit} onChange={onChange} />;
   if (b.type === "timeline") return <Timeline block={b} edit={edit} onChange={onChange} />;
   if (b.type === "swot") return <Swot block={b} edit={edit} onChange={onChange} />;
+  if (b.type === "risk") return <RiskRegister block={b} edit={edit} onChange={onChange} />;
+  if (b.type === "modelcard") return <ModelCard block={b} edit={edit} onChange={onChange} />;
+  if (b.type === "sources") return <DataSources block={b} edit={edit} onChange={onChange} />;
 
   return <Table block={b} edit={edit} onChange={onChange} />;
 }

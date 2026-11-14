@@ -13,8 +13,14 @@ import {
   filledApprovals,
   filledDecisions,
   filledItems,
+  filledMetrics,
   filledMilestones,
+  filledModelFields,
+  filledRisks,
+  filledSources,
   isEmptyBlock,
+  riskCounts,
+  riskLevel,
   type Block,
 } from "@/content/blocks";
 
@@ -137,6 +143,56 @@ function PrintBlocks({ blocks }: { blocks: Block[] }) {
               </ul>
             </PrintTitled>
           );
+        if (b.type === "risk") {
+          const { high, open } = riskCounts(b);
+          return (
+            <PrintTitled key={b.id} title={`Risk Register · ${high} high, ${open} open`}>
+              <PrintTable
+                rows={[
+                  ["Risk", "Level", "Type", "Plan", "Owner", "Status"],
+                  ...filledRisks(b).map((r) => [
+                    r.risk,
+                    `${riskLevel(r)} (likelihood ${r.likelihood.toLowerCase()}, impact ${r.impact.toLowerCase()})`,
+                    r.category,
+                    r.plan,
+                    r.owner,
+                    r.status,
+                  ]),
+                ]}
+              />
+            </PrintTitled>
+          );
+        }
+        if (b.type === "modelcard") {
+          const metrics = filledMetrics(b);
+          return (
+            <PrintTitled key={b.id} title={`Model Card${b.reviewed ? ` · reviewed ${formatDate(b.reviewed)}` : ""}`}>
+              {filledModelFields(b).map((f) => (
+                <p key={f.key} className="whitespace-pre-line">
+                  <span className="font-medium">{f.label}:</span> {b.fields[f.key]}
+                </p>
+              ))}
+              {metrics.length > 0 && (
+                <div className="mt-1">
+                  <PrintTable rows={[["Measure", "Result", "Target"], ...metrics.map((m) => [m.name, m.result, m.target])]} />
+                </div>
+              )}
+            </PrintTitled>
+          );
+        }
+        if (b.type === "sources") {
+          const rows = filledSources(b);
+          return (
+            <PrintTitled key={b.id} title={`Data Sources · ${rows.filter((r) => r.personal === "Yes").length} with personal data`}>
+              <PrintTable
+                rows={[
+                  ["Source", "What it holds", "Owner", "Updated", "Personal data", "Access"],
+                  ...rows.map((r) => [r.name, r.what, r.owner, r.refresh, r.personal, r.access]),
+                ]}
+              />
+            </PrintTitled>
+          );
+        }
         return (
           <PrintTitled key={b.id} title="SWOT">
             <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">

@@ -19,6 +19,9 @@ const NAME: Record<Block["type"], string> = {
   approval: "Approval Tracker",
   timeline: "Timeline",
   swot: "SWOT",
+  risk: "Risk Register",
+  modelcard: "Model Card",
+  sources: "Data Sources",
 };
 const UNDO_MS = 8000;
 

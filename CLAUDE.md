@@ -149,6 +149,16 @@ Milestones (a mockup before each, Karen approves before any push):
    demo's Plan phase has a seeded "Governance" section (`plan-governance`);
    older saves get it only through Reset demo.
 10. AI blocks: Risk Register, Model Card, Data Sources.
+    **Done.** Claude's designs (no Playbook equivalent); Karen approved the
+    mockup 2026-11-14. UI in `src/components/blocks/AiBlocks.tsx`. Risk level
+    is never stored: `riskLevel()` works it out from likelihood times impact
+    (1-2 low, 3-4 medium, 6-9 high). Risk types: Privacy, Bias, Accuracy,
+    Security, Misuse, Operations; statuses Open, Mitigating, Accepted, Closed.
+    The Model Card has fixed headings (`MODEL_FIELDS`) plus free evaluation
+    rows. New data sources default to "Not sure" (personal data) and "Not
+    requested" (access) so nothing looks cleared by default. Record only: no
+    link to checkpoints or the Guardrails page. Demo: seeded "Model and data"
+    section in Develop (`develop-model-data`).
 11. Media blocks: Image, Video, File/Link (URLs only).
 12. Tools menu: backup and restore, project changelog, status, keyboard
     shortcuts. Link the Fit Check score to the Conceive checkpoint.
@@ -175,4 +185,4 @@ the link with a real folder, run:
   automatically.
 - Commit as `343284727+kburk-2026@users.noreply.github.com` (set in this repo's
   git config); GitHub rejects pushes that expose the private email.
-- Phase 1 is complete. Phase 2 milestones 7 to 9 are done. Next: milestone 10 (AI blocks).
+- Phase 1 is complete. Phase 2 milestones 7 to 10 are done. Next: milestone 11 (media blocks).

@@ -8,8 +8,14 @@ import {
   filledApprovals,
   filledDecisions,
   filledItems,
+  filledMetrics,
   filledMilestones,
+  filledModelFields,
+  filledRisks,
+  filledSources,
   isEmptyBlock,
+  riskCounts,
+  riskLevel,
   type Block,
 } from "@/content/blocks";
 import { openCriteria, overrideFor, phaseState } from "@/state/project";
@@ -116,6 +122,31 @@ export function blocksToMarkdown(blocks: Block[]): string[] {
     } else if (b.type === "timeline") {
       out.push("**Timeline**", "");
       for (const m of filledMilestones(b)) out.push(`- ${m.done ? "[x]" : "[ ]"} ${dateOr(m.date, "No date")}: ${m.text.trim()}`);
+    } else if (b.type === "risk") {
+      const { high, open } = riskCounts(b);
+      out.push(
+        `**Risk Register** (${high} high, ${open} open)`,
+        "",
+        ...table([
+          ["Risk", "Level", "Type", "Likelihood", "Impact", "Plan", "Owner", "Status"],
+          ...filledRisks(b).map((r) => [r.risk, riskLevel(r), r.category, r.likelihood, r.impact, r.plan, r.owner, r.status]),
+        ]),
+      );
+    } else if (b.type === "modelcard") {
+      out.push(`**Model Card**${b.reviewed ? ` (reviewed ${formatDate(b.reviewed)})` : ""}`, "");
+      for (const f of filledModelFields(b)) out.push(`- **${f.label}:** ${b.fields[f.key].trim().replace(/\n+/g, " ")}`);
+      const metrics = filledMetrics(b);
+      if (metrics.length) out.push("", ...table([["Measure", "Result", "Target"], ...metrics.map((m) => [m.name, m.result, m.target])]));
+    } else if (b.type === "sources") {
+      const rows = filledSources(b);
+      out.push(
+        `**Data Sources** (${rows.filter((r) => r.personal === "Yes").length} with personal data)`,
+        "",
+        ...table([
+          ["Source", "What it holds", "Owner", "Updated", "Personal data", "Access"],
+          ...rows.map((r) => [r.name, r.what, r.owner, r.refresh, r.personal, r.access]),
+        ]),
+      );
     } else {
       out.push("**SWOT**");
       for (const k of SWOT_KEYS) {

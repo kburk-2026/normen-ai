@@ -37,10 +37,10 @@ const PILL: Record<string, string> = {
   Rejected: "bg-orange-bg text-orange-soft",
 };
 
-const field = "block w-full bg-transparent text-ink placeholder:text-faint focus:outline-none";
+export const field = "block w-full bg-transparent text-ink placeholder:text-faint focus:outline-none";
 const addButton = "mt-3 inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs text-faint hover:text-ink";
 
-function Card({
+export function Card({
   icon: Icon,
   title,
   note,
@@ -95,7 +95,7 @@ function Status<T extends string>({
   );
 }
 
-function DateField({
+export function DateField({
   edit,
   value,
   label,
@@ -122,7 +122,7 @@ function DateField({
   );
 }
 
-function Remove({ label, onClick }: { label: string; onClick: () => void }) {
+export function Remove({ label, onClick }: { label: string; onClick: () => void }) {
   return (
     <button type="button" aria-label={label} title={label} onClick={onClick} className="shrink-0 rounded p-0.5 text-faint hover:text-ink">
       <IconX size={14} aria-hidden />
@@ -130,7 +130,7 @@ function Remove({ label, onClick }: { label: string; onClick: () => void }) {
   );
 }
 
-function Add({ label, name, onClick }: { label: string; name?: string; onClick: () => void }) {
+export function Add({ label, name, onClick }: { label: string; name?: string; onClick: () => void }) {
   return (
     <button type="button" aria-label={name} className={addButton} onClick={onClick}>
       <IconPlus size={12} aria-hidden /> {label}
@@ -139,7 +139,7 @@ function Add({ label, name, onClick }: { label: string; name?: string; onClick: 
 }
 
 /** Replace one row of a list by ID. */
-const patch = <R extends { id: string }>(list: R[], id: string, p: Partial<R>) => list.map((r) => (r.id === id ? { ...r, ...p } : r));
+export const patch = <R extends { id: string }>(list: R[], id: string, p: Partial<R>) => list.map((r) => (r.id === id ? { ...r, ...p } : r));
 
 export function DecisionLog({ block: b, edit, onChange }: Props<DecisionBlock>) {
   const rows = edit ? b.rows : filledDecisions(b);

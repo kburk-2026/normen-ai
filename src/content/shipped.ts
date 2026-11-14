@@ -15,6 +15,13 @@ export const SHIPPED: ShippedEntry[] = [
   {
     date: "2026-11-14",
     kind: "Milestone",
+    label: "Milestone 10",
+    title: "AI blocks",
+    body: "Three blocks for the AI side of a project: a Risk Register that works out each risk's level from likelihood and impact, a Model Card with the same questions for every project, and Data Sources, which records who owns the data, whether it holds personal data and whether access is approved.",
+  },
+  {
+    date: "2026-11-14",
+    kind: "Milestone",
     label: "Milestone 9",
     title: "Governance blocks",
     body: "Four new blocks for the record of a project: a Decision Log, an Approval Tracker, a Timeline that sorts itself by date, and a SWOT. The demo's Plan phase has a Governance page showing all four.",

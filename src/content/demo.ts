@@ -185,6 +185,7 @@ function demoSections(): Record<PhaseId, Section[]> {
     s[phase] = s[phase].map((x) => (x.kind === "overview" ? { ...x, blocks: list } : x));
   }
   s.plan.push({ id: "plan-governance", kind: "custom", title: "Governance", blocks: governanceBlocks(), updatedAt: SEED_TIME });
+  s.develop.push({ id: "develop-model-data", kind: "custom", title: "Model and data", blocks: modelAndDataBlocks(), updatedAt: SEED_TIME });
   return s;
 }
 
@@ -228,4 +229,50 @@ function governanceBlocks(): Block[] {
     t: ["Policy changes shift what counts as unusual"],
   },
 ];
+}
+
+/** The demo's "Model and data" page in Develop: one of each AI block. Figures are examples. */
+function modelAndDataBlocks(): Block[] {
+  return [
+    {
+      id: "b-m1",
+      type: "risk",
+      rows: [
+        { id: "r1", risk: "The model flags one department's claims more often than others", plan: "Compare flag rates by department each month. Retrain if any gap passes 5 points.", category: "Bias", likelihood: "Medium", impact: "High", owner: "Analytics lead", status: "Mitigating" },
+        { id: "r2", risk: "Claim notes contain names and health details", plan: "Strip free-text notes before training. Privacy review C-202 covers the rest.", category: "Privacy", likelihood: "High", impact: "High", owner: "Legal", status: "Open" },
+        { id: "r3", risk: "Reviewers trust the flag and stop checking unflagged claims", plan: "Sample 5% of unflagged claims for review every week.", category: "Misuse", likelihood: "Medium", impact: "Medium", owner: "Finance ops", status: "Open" },
+        { id: "r4", risk: "The scoring service is down at month end", plan: "Fall back to the rules baseline; reviewers see a banner.", category: "Operations", likelihood: "Low", impact: "Medium", owner: "IT", status: "Accepted" },
+      ],
+    },
+    {
+      id: "b-m2",
+      type: "modelcard",
+      fields: {
+        name: "Expense triage classifier",
+        version: "0.3 (prototype)",
+        kind: "Gradient boosted trees, built in-house",
+        owner: "Analytics team",
+        use: "Rank incoming expense claims so finance reviews the riskiest first.",
+        notFor: "Approving or rejecting claims on its own. Judging employees.",
+        data: "18 months of anonymized travel claims, labeled by finance.",
+        limits: "Weak on claim types with few examples, such as relocation. Not tested on claims in other currencies.",
+        oversight: "Every flag goes to a reviewer. Reviewers can overrule it and say why.",
+      },
+      reviewed: "2026-11-02",
+      metrics: [
+        { id: "r1", name: "Flagged claims caught", result: "84%", target: "80% or more" },
+        { id: "r2", name: "False flags", result: "6%", target: "Under 10%" },
+        { id: "r3", name: "Flag-rate gap between departments", result: "7 points", target: "Under 5 points" },
+      ],
+    },
+    {
+      id: "b-m3",
+      type: "sources",
+      rows: [
+        { id: "r1", name: "Expense claims history", what: "18 months of claims with amount, category, department and outcome", owner: "Finance systems", refresh: "Nightly", personal: "Yes", access: "Approved" },
+        { id: "r2", name: "Reviewer decisions", what: "Which claims finance sent back, and why", owner: "Finance ops", refresh: "Weekly", personal: "No", access: "Approved" },
+        { id: "r3", name: "HR department list", what: "Department and cost center for each employee", owner: "HR", refresh: "Monthly", personal: "Yes", access: "Requested" },
+      ],
+    },
+  ];
 }
