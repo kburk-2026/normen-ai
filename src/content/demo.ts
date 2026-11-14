@@ -38,6 +38,8 @@ export type Project = {
   status: ProjectStatus;
   /** True only for the seeded Expense triage demo. */
   isDemo?: boolean;
+  /** Demo only: the DEMO_VERSION this save was last brought up to. */
+  demoVersion?: number;
   /** ISO timestamps. */
   createdAt: string;
   updatedAt: string;
@@ -75,6 +77,17 @@ export function allDefaultSections(at = SEED_TIME): Record<PhaseId, Section[]> {
 export const DEMO_ID = "demo";
 
 /**
+ * Bump when the demo gains a page, and list the page in DEMO_ADDED_PAGES.
+ * A saved demo from an earlier version gets the new pages when it loads;
+ * its edits stay, and a page deleted after that stays deleted.
+ */
+export const DEMO_VERSION = 2;
+export const DEMO_ADDED_PAGES: { phase: PhaseId; sectionId: string; since: number }[] = [
+  { phase: "plan", sectionId: "plan-governance", since: 1 },
+  { phase: "develop", sectionId: "develop-model-data", since: 2 },
+];
+
+/**
  * The seeded demo project. Conceive passed cleanly; Plan passed with an
  * override (privacy review still open); Develop is under way.
  */
@@ -84,6 +97,7 @@ export const DEMO_PROJECT: Project = {
   blurb: "Flag expense claims that need a second look, so finance reviews the right ones first.",
   status: "In Progress",
   isDemo: true,
+  demoVersion: DEMO_VERSION,
   createdAt: "2026-10-01T00:00:00.000Z",
   updatedAt: SEED_TIME,
   activities: {

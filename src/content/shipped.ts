@@ -14,6 +14,13 @@ export type ShippedEntry = {
 export const SHIPPED: ShippedEntry[] = [
   {
     date: "2026-11-14",
+    kind: "Fix",
+    label: "Fix",
+    title: "New demo pages reach returning visitors",
+    body: "If you had opened the demo before, its newer pages (Governance, and Model and data) were missing until you reset it. They now appear on your next visit, and your own edits stay.",
+  },
+  {
+    date: "2026-11-14",
     kind: "Milestone",
     label: "Milestone 10",
     title: "AI blocks",

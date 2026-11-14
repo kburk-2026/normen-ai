@@ -1,6 +1,6 @@
 import { PHASES, type PhaseId } from "@/content/phases";
 import { CHECKPOINTS } from "@/content/lifecycle";
-import { DEMO_PROJECT, OLD_SEED_TIME, SEED_TIME, allDefaultSections, PROJECT_STATUSES, type Project } from "@/content/demo";
+import { DEMO_ADDED_PAGES, DEMO_PROJECT, DEMO_VERSION, OLD_SEED_TIME, SEED_TIME, allDefaultSections, PROJECT_STATUSES, type Project } from "@/content/demo";
 import { normalizeBlocks } from "@/content/blocks";
 
 export type PhaseState = "passed" | "current" | "locked";
@@ -88,6 +88,16 @@ export function normalizeProject(saved: Partial<Project>): Project {
       };
     });
   }
+  // A saved demo from before a demo page existed gets that page now. Once it is at the
+  // current version, a page the user deletes is not brought back.
+  const isDemo = saved.isDemo ?? !saved.id;
+  if (isDemo) {
+    for (const page of DEMO_ADDED_PAGES) {
+      if (page.since <= (saved.demoVersion ?? 0) || sections[page.phase].some((x) => x.id === page.sectionId)) continue;
+      const seeded = DEMO_PROJECT.sections[page.phase].find((x) => x.id === page.sectionId);
+      if (seeded) sections[page.phase] = [...sections[page.phase], seeded];
+    }
+  }
   return {
     id: saved.id ?? DEMO_PROJECT.id,
     name: saved.name ?? base?.name ?? "Untitled project",
@@ -95,7 +105,8 @@ export function normalizeProject(saved: Partial<Project>): Project {
     status: PROJECT_STATUSES.includes(saved.status as never)
       ? (saved.status as Project["status"])
       : (base?.status ?? "Draft"),
-    isDemo: saved.isDemo ?? !saved.id,
+    isDemo,
+    ...(isDemo ? { demoVersion: DEMO_VERSION } : {}),
     createdAt: saved.createdAt ?? base?.createdAt ?? new Date().toISOString(),
     updatedAt: fromOldSeed(saved.updatedAt) ?? base?.updatedAt ?? new Date().toISOString(),
     activities: saved.activities ?? {},

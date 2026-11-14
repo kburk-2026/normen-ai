@@ -69,7 +69,7 @@ src/
 - passing a checkpoint needs every criterion ticked;
 - an override needs a reason of 20 or more characters and is kept as a dated record, with the criteria that were open at the time.
 
-The React providers only wire those functions to the page and to `localStorage`, writing half a second after changes stop (and at once when the tab is hidden or closed). The section page shows Saving, Saved, or a warning if the browser refuses to store the change. They start from the demo seed so the server and browser render the same thing, then load saved projects after the page mounts. Saves and backups from older versions get any missing fields filled in rather than discarded; the phase 1 single-project save is migrated into the demo and left in place.
+The React providers only wire those functions to the page and to `localStorage`, writing half a second after changes stop (and at once when the tab is hidden or closed). The section page shows Saving, Saved, or a warning if the browser refuses to store the change. They start from the demo seed so the server and browser render the same thing, then load saved projects after the page mounts. Saves and backups from older versions get any missing fields filled in rather than discarded, and a saved demo picks up demo pages added since (the demo carries a version number); the phase 1 single-project save is migrated into the demo and left in place.
 
 **No server, no database (yet).** Projects live in the visitor's browser, so the hub offers a one-file backup and restore. Supabase arrives in phase 3 for saved projects and share links.
 

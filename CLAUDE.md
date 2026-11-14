@@ -169,6 +169,14 @@ Milestones (a mockup before each, Karen approves before any push):
 17. Timeline view in the Workbench (uses checkpoint pass dates).
 18. Curriculum Program Designer case study (needs Karen's material).
 
+## Adding a demo page
+
+When the demo gains a seeded custom section, bump `DEMO_VERSION` in
+`src/content/demo.ts` and list the section in `DEMO_ADDED_PAGES` with that
+version. `normalizeProject` then adds it to saved demos from earlier versions
+(edits kept; a page deleted afterwards stays deleted). Without this, returning
+visitors only get the page through Reset demo.
+
 ## Local setup note
 
 The project folder is in iCloud Drive, which offloads `node_modules` and makes
