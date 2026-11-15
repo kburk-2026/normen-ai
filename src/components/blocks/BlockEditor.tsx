@@ -22,6 +22,9 @@ const NAME: Record<Block["type"], string> = {
   risk: "Risk Register",
   modelcard: "Model Card",
   sources: "Data Sources",
+  image: "Image",
+  video: "Video",
+  links: "Files and links",
 };
 const UNDO_MS = 8000;
 

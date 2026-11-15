@@ -10,7 +10,7 @@ Live at **https://normen-ai.vercel.app**.
 
 Normen AI maps the seven product management lifecycle phases (Conceive, Plan, Develop, Qualify, Launch, Deliver, Retire) to the four AI product development stages (Ideation, Data, R&D, Deployment). Each phase carries its own activities, guardrails, evaluation metrics and an exit checkpoint.
 
-- **Workbench:** a hub of projects. Each project has the seven phases as tabs, each with an Overview, a Checklist and your own sections. Write in the Overview and your own sections with blocks: text, callouts, dividers and tables, plus a Decision Log, Approval Tracker, Timeline and SWOT, and three AI blocks: Risk Register, Model Card and Data Sources. Pass each checkpoint to unlock the next phase, or override it with a logged reason.
+- **Workbench:** a hub of projects. Each project has the seven phases as tabs, each with an Overview, a Checklist and your own sections. Write in the Overview and your own sections with blocks: text, callouts, dividers and tables, plus a Decision Log, Approval Tracker, Timeline and SWOT, three AI blocks (Risk Register, Model Card, Data Sources) and three media blocks (Image, Video, Files and links). Pass each checkpoint to unlock the next phase, or override it with a logged reason.
 - **Fit Check:** ten weighted questions that tell you whether a problem needs AI at all.
 - **Field Guide:** the whole method, with every item labeled as course material or Claude's addition.
 - **Shipped:** what changed in the app, and when.
@@ -26,7 +26,7 @@ Normen AI maps the seven product management lifecycle phases (Conceive, Plan, De
 | 5 | Field Guide, Shipped, export | Done |
 | 6 | Accessibility pass, architecture notes | Done |
 
-Phase 2 turns Normen into a project tracker, modeled on a product development playbook: projects with phase tabs and sections (milestone 7, done), a block editor for writing in each section (milestone 8, done), governance blocks (milestone 9, done), AI blocks (milestone 10, done), then media blocks and the Scorecard, Pulse and Guardrails dashboards. Phase 3 adds sign-in, saved projects in the cloud, and sharing.
+Phase 2 turns Normen into a project tracker, modeled on a product development playbook: projects with phase tabs and sections (milestone 7, done), a block editor for writing in each section (milestone 8, done), governance blocks (milestone 9, done), AI blocks (milestone 10, done), media blocks (milestone 11, done), then a Tools menu and the Scorecard, Pulse and Guardrails dashboards. Phase 3 adds sign-in, saved projects in the cloud, and sharing.
 
 ## Stack
 
@@ -62,6 +62,8 @@ src/
 **Projects and routes.** `/workbench` lists every project. A project lives at `/workbench/<id>`, with `/board` for the board view and `/<phase>/<section>` for a section page. Every phase has two fixed sections (Overview and Checklist) and any number of the user's own.
 
 **Sections hold blocks.** Every section except the Checklist holds a list of blocks. A block is plain data (`{ id, type, ... }`); `BlockContent` draws each type as an editor or as the finished page, and the Markdown and print exports read the same data. Saved blocks are repaired on load: unknown types are dropped and missing fields filled in.
+
+**Media by address, loaded with care.** Media blocks hold web addresses, not files (`src/lib/media.ts` has the rules). Only `https` addresses are loaded or linked. A video's player address is rebuilt from the video's ID for YouTube, Vimeo and Loom, and nothing loads from the video site until the reader presses play. Images are requested without a referrer, and the hidden print view loads them only when the PDF button is pressed.
 
 **Rules are separate from screens.** `src/state/project.ts` and `src/state/workspace.ts` hold the rules as plain functions that take data and return new data:
 

@@ -8,6 +8,7 @@ import {
   filledApprovals,
   filledDecisions,
   filledItems,
+  filledLinks,
   filledMetrics,
   filledMilestones,
   filledModelFields,
@@ -20,6 +21,7 @@ import {
 } from "@/content/blocks";
 import { openCriteria, overrideFor, phaseState } from "@/state/project";
 import { formatDate } from "./format";
+import { hostOf } from "./media";
 
 const BOX: Record<ActivityStatus, string> = { done: "[x]", doing: "[~]", todo: "[ ]" };
 
@@ -89,6 +91,9 @@ function lines(text: string) {
 
 const cell = (c: string) => c.trim().replace(/\|/g, "\\|").replace(/\n/g, "<br>") || " ";
 
+/** Text safe to put inside a Markdown link's square brackets. */
+const mdText = (t: string) => t.trim().replace(/[\[\]]/g, "");
+
 const dateOr = (d: string, none = "") => (d ? formatDate(d) : none);
 
 /** A Markdown table; row 0 is the header. */
@@ -122,6 +127,14 @@ export function blocksToMarkdown(blocks: Block[]): string[] {
     } else if (b.type === "timeline") {
       out.push("**Timeline**", "");
       for (const m of filledMilestones(b)) out.push(`- ${m.done ? "[x]" : "[ ]"} ${dateOr(m.date, "No date")}: ${m.text.trim()}`);
+    } else if (b.type === "image") {
+      out.push(`![${b.alt.trim().replace(/[\[\]\n]/g, " ")}](${b.url.trim()})`);
+      if (b.caption.trim()) out.push("", `*${b.caption.trim().replace(/\n+/g, " ")}*`);
+    } else if (b.type === "video") {
+      out.push(`Video: [${mdText(b.title) || hostOf(b.url)}](${b.url.trim()})`);
+    } else if (b.type === "links") {
+      out.push("**Files and links**", "");
+      for (const r of filledLinks(b)) out.push(`- [${mdText(r.title) || hostOf(r.url)}](${r.url.trim()})${r.note.trim() ? `: ${r.note.trim()}` : ""}`);
     } else if (b.type === "risk") {
       const { high, open } = riskCounts(b);
       out.push(

@@ -7,7 +7,6 @@ import {
   IconInfoCircle,
   IconLayoutGrid,
   IconLink,
-  IconLock,
   IconMinus,
   IconPhoto,
   IconPlus,
@@ -50,14 +49,16 @@ const GROUPS: { name: string; items: Pick[] }[] = [
       { type: "sources", label: "Data Sources", hint: "Where the data comes from, and who owns it", icon: IconDatabase },
     ],
   },
+  {
+    name: "Media",
+    items: [
+      { type: "image", label: "Image", hint: "A picture from a web address", icon: IconPhoto },
+      { type: "video", label: "Video", hint: "YouTube, Vimeo, Loom or a video file", icon: IconVideo },
+      { type: "links", label: "Files and links", hint: "A list of documents and pages", icon: IconLink },
+    ],
+  },
 ];
 
-/** Blocks on the phase 2 plan, shown so people know what is coming. */
-const LATER = [
-  { label: "Image", icon: IconPhoto, m: 11 },
-  { label: "Video", icon: IconVideo, m: 11 },
-  { label: "File or link", icon: IconLink, m: 11 },
-];
 
 /** The "Add a block" button and its panel of block types. */
 const BlockPicker = forwardRef<HTMLButtonElement, { onPick: (type: BlockType) => void }>(function BlockPicker(
@@ -115,7 +116,7 @@ const BlockPicker = forwardRef<HTMLButtonElement, { onPick: (type: BlockType) =>
           id={panelId}
           role="group"
           aria-label="Block types"
-          className="absolute left-0 top-full z-30 mt-2 w-[min(34rem,calc(100vw-2.5rem))] rounded-2xl border border-line bg-canvas p-3 shadow-2xl"
+          className="absolute left-0 top-full z-30 mt-2 max-h-[70vh] w-[min(34rem,calc(100vw-2.5rem))] overflow-y-auto rounded-2xl border border-line bg-canvas p-3 shadow-2xl"
         >
           {GROUPS.map((g, gi) => (
             <div key={g.name} className={gi ? "mt-4" : ""}>
@@ -144,18 +145,6 @@ const BlockPicker = forwardRef<HTMLButtonElement, { onPick: (type: BlockType) =>
               </div>
             </div>
           ))}
-          <h3 className="mt-4 px-1 text-xs uppercase tracking-wide text-faint">Coming in later releases</h3>
-          <ul className="mt-2 grid grid-cols-1 gap-x-4 gap-y-1.5 px-1 text-sm text-faint sm:grid-cols-2">
-            {LATER.map(({ label, icon: Icon, m }) => (
-              <li key={label} className="flex items-center gap-2">
-                <Icon size={15} aria-hidden /> {label}
-                <span className="ml-auto inline-flex items-center gap-1 font-mono text-[11px]">
-                  <IconLock size={11} aria-hidden />
-                  <span className="sr-only">milestone</span> M{m}
-                </span>
-              </li>
-            ))}
-          </ul>
         </div>
       )}
     </div>

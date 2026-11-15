@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { IconDownload, IconLayoutKanban, IconLayoutList, IconPrinter, IconRefresh } from "@tabler/icons-react";
 import { ACTIVITIES } from "@/content/lifecycle";
@@ -19,6 +19,33 @@ export default function Workbench({ view }: { view: View }) {
   const { project, statusOf, reset } = useProject();
   const [justPassed, setJustPassed] = useState<PhaseId | null>(null);
   const done = ACTIVITIES.filter((a) => statusOf(a.id) === "done").length;
+
+  // The print view's images load only for the PDF button: it turns them on, waits for
+  // them to arrive (4 seconds at most), then opens the print dialog.
+  const [printImages, setPrintImages] = useState(false);
+  const printView = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!printImages) return;
+    let cancelled = false;
+    const pending = [...(printView.current?.querySelectorAll("img") ?? [])]
+      .filter((img) => !img.complete)
+      .map(
+        (img) =>
+          new Promise<void>((done) => {
+            img.addEventListener("load", () => done(), { once: true });
+            img.addEventListener("error", () => done(), { once: true });
+          }),
+      );
+    const timeout = new Promise<void>((done) => window.setTimeout(done, 4000));
+    Promise.race([Promise.all(pending), timeout]).then(() => {
+      if (cancelled) return;
+      window.print();
+      setPrintImages(false);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [printImages]);
 
   const downloadMarkdown = () => {
     const blob = new Blob([projectToMarkdown(project, today())], { type: "text/markdown;charset=utf-8" });
@@ -43,7 +70,7 @@ export default function Workbench({ view }: { view: View }) {
             <ExportButton onClick={downloadMarkdown} label="Download the project as Markdown">
               <IconDownload size={16} aria-hidden /> Markdown
             </ExportButton>
-            <ExportButton onClick={() => window.print()} label="Print the project or save it as a PDF">
+            <ExportButton onClick={() => setPrintImages(true)} label="Print the project or save it as a PDF">
               <IconPrinter size={16} aria-hidden /> PDF
             </ExportButton>
             {project.isDemo && (
@@ -92,7 +119,9 @@ export default function Workbench({ view }: { view: View }) {
           {view === "list" ? <ListView justPassed={justPassed} onPassed={setJustPassed} /> : <BoardView />}
         </div>
       </div>
-      <ProjectPrint />
+      <div ref={printView}>
+        <ProjectPrint withImages={printImages} />
+      </div>
     </>
   );
 }

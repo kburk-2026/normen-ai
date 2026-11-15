@@ -1,8 +1,10 @@
 /**
  * Blocks: the pieces of content inside a section. Milestone 8 shipped the
- * basics, milestone 9 the governance blocks and milestone 10 the AI blocks;
- * media blocks arrive in milestone 11.
+ * basics, milestone 9 the governance blocks, milestone 10 the AI blocks and
+ * milestone 11 the media blocks.
  */
+
+import { isWebUrl, videoSource } from "@/lib/media";
 
 export const CALLOUT_TONES = ["note", "warning", "decision"] as const;
 export type CalloutTone = (typeof CALLOUT_TONES)[number];
@@ -104,7 +106,24 @@ export type SourceRow = {
 };
 export type SourcesBlock = { id: string; type: "sources"; rows: SourceRow[] };
 
+// ---- Media blocks (milestone 11). Web addresses only: no uploads until phase 3 storage. ----
+
+export type ImageBlock = {
+  id: string;
+  type: "image";
+  url: string;
+  /** What the image shows, for people who cannot see it. Empty for decoration. */
+  alt: string;
+  caption: string;
+};
+export type VideoBlock = { id: string; type: "video"; url: string; title: string };
+export type LinkRow = { id: string; title: string; url: string; note: string };
+export type LinksBlock = { id: string; type: "links"; rows: LinkRow[] };
+
 export type Block =
+  | ImageBlock
+  | VideoBlock
+  | LinksBlock
   | RiskBlock
   | ModelCardBlock
   | SourcesBlock
@@ -145,8 +164,16 @@ export function newBlock(type: BlockType, id: string): Block {
       return { id, type, fields: emptyModelFields(), reviewed: "", metrics: [newMetric()] };
     case "sources":
       return { id, type, rows: [newSource()] };
+    case "image":
+      return { id, type, url: "", alt: "", caption: "" };
+    case "video":
+      return { id, type, url: "", title: "" };
+    case "links":
+      return { id, type, rows: [newLink()] };
   }
 }
+
+export const newLink = (): LinkRow => ({ id: rowId(), title: "", url: "", note: "" });
 
 export const emptyModelFields = () => Object.fromEntries(MODEL_FIELDS.map((f) => [f.key, ""])) as Record<ModelField, string>;
 
@@ -310,6 +337,19 @@ export function normalizeBlocks(raw: unknown): Block[] {
         });
         break;
       }
+      case "image":
+        out.push({ id, type: "image", url: str(b.url), alt: str(b.alt), caption: str(b.caption) });
+        break;
+      case "video":
+        out.push({ id, type: "video", url: str(b.url), title: str(b.title) });
+        break;
+      case "links":
+        out.push({
+          id,
+          type: "links",
+          rows: rows(b.rows).map((r) => ({ id: r.id as string, title: str(r.title), url: str(r.url), note: str(r.note) })),
+        });
+        break;
       case "sources":
         out.push({
           id,
@@ -338,6 +378,10 @@ export function isEmptyBlock(b: Block) {
   if (b.type === "approval") return filledApprovals(b).length === 0;
   if (b.type === "timeline") return filledMilestones(b).length === 0;
   if (b.type === "swot") return SWOT_KEYS.every((k) => filledItems(b[k]).length === 0);
+  // A media block with no usable address shows nothing to a reader.
+  if (b.type === "image") return !isWebUrl(b.url);
+  if (b.type === "video") return !videoSource(b.url);
+  if (b.type === "links") return filledLinks(b).length === 0;
   if (b.type === "risk") return filledRisks(b).length === 0;
   if (b.type === "sources") return filledSources(b).length === 0;
   if (b.type === "modelcard") return filledModelFields(b).length === 0 && filledMetrics(b).length === 0;
@@ -358,3 +402,5 @@ export function riskCounts(b: RiskBlock) {
   const open = filledRisks(b).filter((r) => r.status !== "Closed");
   return { high: open.filter((r) => riskLevel(r) === "High").length, open: open.length };
 }
+/** Links a reader can follow: only rows with a full https address. */
+export const filledLinks = (b: LinksBlock) => b.rows.filter((r) => isWebUrl(r.url));

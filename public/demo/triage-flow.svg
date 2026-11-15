@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 340" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <title>Expense triage flow</title>
+  <rect width="920" height="340" rx="20" fill="#2A2925"/>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#A8A59B"/></marker>
+  </defs>
+  <g fill="none" stroke="#A8A59B" stroke-width="2" marker-end="url(#a)">
+    <path d="M200 170H258"/>
+    <path d="M440 150C480 150 470 90 518 90"/>
+    <path d="M440 190C480 190 470 250 518 250"/>
+    <path d="M700 90H738"/>
+    <path d="M700 250H738"/>
+  </g>
+  <g font-size="15" text-anchor="middle">
+    <rect x="40" y="130" width="160" height="80" rx="14" fill="#3A3933"/>
+    <text x="120" y="166" fill="#EEEDE8" font-weight="600">Claim comes in</text>
+    <text x="120" y="188" fill="#A8A59B" font-size="13">from the expense tool</text>
+
+    <rect x="260" y="130" width="180" height="80" rx="14" fill="#45301F" stroke="#D67B37" stroke-width="1.5"/>
+    <text x="350" y="166" fill="#EEEDE8" font-weight="600">Model scores it</text>
+    <text x="350" y="188" fill="#E9A56E" font-size="13">needs a second look?</text>
+
+    <rect x="520" y="50" width="180" height="80" rx="14" fill="#3A3933"/>
+    <text x="610" y="86" fill="#EEEDE8" font-weight="600">Flagged</text>
+    <text x="610" y="108" fill="#A8A59B" font-size="13">goes to the top of the queue</text>
+
+    <rect x="520" y="210" width="180" height="80" rx="14" fill="#3A3933"/>
+    <text x="610" y="246" fill="#EEEDE8" font-weight="600">Not flagged</text>
+    <text x="610" y="268" fill="#A8A59B" font-size="13">normal queue, 5% sampled</text>
+
+    <rect x="740" y="50" width="150" height="240" rx="14" fill="#2F3A3F" stroke="#6E8590" stroke-width="1.5"/>
+    <text x="815" y="160" fill="#EEEDE8" font-weight="600">A reviewer</text>
+    <text x="815" y="182" fill="#EEEDE8" font-weight="600">decides</text>
+    <text x="815" y="208" fill="#A9BCC4" font-size="13">every time</text>
+  </g>
+</svg>

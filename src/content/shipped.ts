@@ -14,6 +14,13 @@ export type ShippedEntry = {
 export const SHIPPED: ShippedEntry[] = [
   {
     date: "2026-11-14",
+    kind: "Milestone",
+    label: "Milestone 11",
+    title: "Media blocks",
+    body: "Add images, videos and lists of files and links to any section, by web address. Videos from YouTube, Vimeo and Loom load nothing until you press play. The demo's Develop phase has a Prototype page showing an image and links.",
+  },
+  {
+    date: "2026-11-14",
     kind: "Design",
     label: "Design",
     title: "Home, Project Console and phase colors",

@@ -165,6 +165,19 @@ Milestones (a mockup before each, Karen approves before any push):
     link to checkpoints or the Guardrails page. Demo: seeded "Model and data"
     section in Develop (`develop-model-data`).
 11. Media blocks: Image, Video, File/Link (URLs only).
+    **Done.** Karen approved the mockup 2026-11-14. UI in
+    `src/components/blocks/MediaBlocks.tsx`; address rules in
+    `src/lib/media.ts` (unit-checked by hand with node; no test runner yet).
+    Only https addresses load or link. Video: YouTube (via
+    youtube-nocookie), Vimeo, Loom, or .mp4/.webm; the embed address is
+    rebuilt from the ID and the player loads only on Play. Images use
+    `referrerPolicy="no-referrer"`; a missing description is a warning, not a
+    block. The third block is a list named "Files and links". The print view
+    takes `withImages`: the PDF button turns it on, waits for images (4 s
+    cap), then prints; the browser's own print shortcut prints descriptions
+    and addresses instead. Demo: "Prototype" section in Develop
+    (`develop-prototype`, demo version 3) with `public/demo/triage-flow.svg`,
+    referenced by its live address. The picker's "coming later" list is gone.
 12. Tools menu: backup and restore, project changelog, status, keyboard
     shortcuts. Link the Fit Check score to the Conceive checkpoint.
 13. Scorecard dashboard (own targets, logged readings, status per metric).
@@ -198,4 +211,4 @@ the link with a real folder, run:
   automatically.
 - Commit as `343284727+kburk-2026@users.noreply.github.com` (set in this repo's
   git config); GitHub rejects pushes that expose the private email.
-- Phase 1 is complete. Phase 2 milestones 7 to 10 are done. Next: milestone 11 (media blocks).
+- Phase 1 is complete. Phase 2 milestones 7 to 11 are done. Next: milestone 12 (Tools menu, Fit Check link).

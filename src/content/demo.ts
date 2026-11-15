@@ -81,10 +81,11 @@ export const DEMO_ID = "demo";
  * A saved demo from an earlier version gets the new pages when it loads;
  * its edits stay, and a page deleted after that stays deleted.
  */
-export const DEMO_VERSION = 2;
+export const DEMO_VERSION = 3;
 export const DEMO_ADDED_PAGES: { phase: PhaseId; sectionId: string; since: number }[] = [
   { phase: "plan", sectionId: "plan-governance", since: 1 },
   { phase: "develop", sectionId: "develop-model-data", since: 2 },
+  { phase: "develop", sectionId: "develop-prototype", since: 3 },
 ];
 
 /**
@@ -200,6 +201,7 @@ function demoSections(): Record<PhaseId, Section[]> {
   }
   s.plan.push({ id: "plan-governance", kind: "custom", title: "Governance", blocks: governanceBlocks(), updatedAt: SEED_TIME });
   s.develop.push({ id: "develop-model-data", kind: "custom", title: "Model and data", blocks: modelAndDataBlocks(), updatedAt: SEED_TIME });
+  s.develop.push({ id: "develop-prototype", kind: "custom", title: "Prototype", blocks: prototypeBlocks(), updatedAt: SEED_TIME });
   return s;
 }
 
@@ -286,6 +288,33 @@ function modelAndDataBlocks(): Block[] {
         { id: "r1", name: "Expense claims history", what: "18 months of claims with amount, category, department and outcome", owner: "Finance systems", refresh: "Nightly", personal: "Yes", access: "Approved" },
         { id: "r2", name: "Reviewer decisions", what: "Which claims finance sent back, and why", owner: "Finance ops", refresh: "Weekly", personal: "No", access: "Approved" },
         { id: "r3", name: "HR department list", what: "Department and cost center for each employee", owner: "HR", refresh: "Monthly", personal: "Yes", access: "Requested" },
+      ],
+    },
+  ];
+}
+
+/** The demo's "Prototype" page in Develop: an image and a list of links. Every address is real. */
+function prototypeBlocks(): Block[] {
+  return [
+    {
+      id: "b-pr1",
+      type: "text",
+      text: "The prototype sits between the expense tool and the review queue. It changes the order claims are reviewed in, and nothing else.",
+    },
+    {
+      id: "b-pr2",
+      type: "image",
+      url: "https://normen-ai.vercel.app/demo/triage-flow.svg",
+      alt: "Flow diagram. A claim comes in from the expense tool and the model scores it. Flagged claims go to the top of the queue; claims that are not flagged join the normal queue, with 5% sampled. Either way, a reviewer decides.",
+      caption: "How a claim moves through triage.",
+    },
+    {
+      id: "b-pr3",
+      type: "links",
+      rows: [
+        { id: "r1", title: "Normen Field Guide", url: "https://normen-ai.vercel.app/field-guide", note: "The method this project follows" },
+        { id: "r2", title: "Fit Check", url: "https://normen-ai.vercel.app/fit-check", note: "The ten questions behind the Conceive checkpoint" },
+        { id: "r3", title: "Normen AI source code", url: "https://github.com/kburk-2026/normen-ai", note: "" },
       ],
     },
   ];

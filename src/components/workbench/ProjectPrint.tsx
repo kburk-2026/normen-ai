@@ -13,6 +13,7 @@ import {
   filledApprovals,
   filledDecisions,
   filledItems,
+  filledLinks,
   filledMetrics,
   filledMilestones,
   filledModelFields,
@@ -27,7 +28,12 @@ import {
 const MARK = { done: "☑", doing: "◐", todo: "☐" } as const;
 
 /** Print-only view of the project: all phases expanded, black on white. The PDF export prints this. */
-export default function ProjectPrint() {
+/**
+ * `withImages` loads image blocks' pictures. It is off until the PDF button asks, so
+ * this hidden view never fetches from other sites in the background; printing with
+ * the browser's own shortcut prints each image's description and address instead.
+ */
+export default function ProjectPrint({ withImages }: { withImages: boolean }) {
   const { project, statusOf } = useProject();
   const done = ACTIVITIES.filter((a) => statusOf(a.id) === "done").length;
 
@@ -56,7 +62,7 @@ export default function ProjectPrint() {
                     <h3 className="text-[9pt] font-medium uppercase tracking-wide text-neutral-500">
                       {section.title || "Untitled section"}
                     </h3>
-                    <PrintBlocks blocks={blocks} />
+                    <PrintBlocks blocks={blocks} withImages={withImages} />
                   </div>
                 ) : null;
               }
@@ -97,7 +103,7 @@ export default function ProjectPrint() {
 }
 
 /** A section's blocks in print: black on white, callouts as a ruled box, tables with borders. */
-function PrintBlocks({ blocks }: { blocks: Block[] }) {
+function PrintBlocks({ blocks, withImages }: { blocks: Block[]; withImages: boolean }) {
   return (
     <div className="mt-1 space-y-2">
       {blocks.map((b) => {
@@ -138,6 +144,42 @@ function PrintBlocks({ blocks }: { blocks: Block[] }) {
                 {filledMilestones(b).map((m) => (
                   <li key={m.id}>
                     {m.done ? "☑" : "☐"} <span className="text-neutral-600">{m.date ? formatDate(m.date) : "No date"}:</span> {m.text}
+                  </li>
+                ))}
+              </ul>
+            </PrintTitled>
+          );
+        if (b.type === "image")
+          return (
+            <figure key={b.id} className="break-inside-avoid">
+              {withImages ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={b.url.trim()} alt={b.alt} referrerPolicy="no-referrer" className="max-h-[80mm] max-w-full" />
+              ) : (
+                <p>
+                  <span className="font-medium">Image:</span> {b.alt.trim() || "No description"}{" "}
+                  <span className="break-all font-mono text-[9pt] text-neutral-600">{b.url.trim()}</span>
+                </p>
+              )}
+              {b.caption.trim() && <figcaption className="mt-0.5 text-[9pt] text-neutral-600">{b.caption}</figcaption>}
+            </figure>
+          );
+        if (b.type === "video")
+          return (
+            <p key={b.id}>
+              <span className="font-medium">Video:</span> {b.title.trim() || "Untitled video"}{" "}
+              <span className="break-all font-mono text-[9pt] text-neutral-600">{b.url.trim()}</span>
+            </p>
+          );
+        if (b.type === "links")
+          return (
+            <PrintTitled key={b.id} title="Files and links">
+              <ul className="list-disc pl-4">
+                {filledLinks(b).map((r) => (
+                  <li key={r.id}>
+                    {r.title.trim() || r.url.trim()}
+                    {r.note.trim() && `: ${r.note.trim()}`}{" "}
+                    <span className="break-all font-mono text-[9pt] text-neutral-600">{r.url.trim()}</span>
                   </li>
                 ))}
               </ul>
