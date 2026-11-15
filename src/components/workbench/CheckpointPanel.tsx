@@ -1,8 +1,10 @@
 "use client";
 
 import { useRef, useState } from "react";
+import Link from "next/link";
 import {
   IconAlertTriangle,
+  IconArrowRight,
   IconLock,
   IconLockOpen,
   IconSquare,
@@ -10,6 +12,7 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import Mascot from "@/components/Mascot";
+import { FIT_BANDS } from "@/content/fitCheck";
 import { ACTIVITIES, CHECKPOINTS } from "@/content/lifecycle";
 import { PHASES, type PhaseId } from "@/content/phases";
 import { useProject } from "@/state/ProjectProvider";
@@ -80,6 +83,7 @@ export default function CheckpointPanel({
                 </span>
                 {c.text}
               </label>
+              {c.id === FIT_CRITERION && <FitEvidence />}
             </li>
           );
         })}
@@ -194,6 +198,47 @@ export default function CheckpointPanel({
           </button>
         </div>
       </dialog>
+    </div>
+  );
+}
+
+/** The checkpoint criterion the Fit Check is evidence for: "AI is the right answer". */
+const FIT_CRITERION = "C-102";
+
+/**
+ * The project's saved Fit Check result, under the criterion it supports.
+ * Evidence only: it never ticks or blocks the criterion.
+ */
+function FitEvidence() {
+  const { project } = useProject();
+  const f = project.fitCheck;
+  const href = `/fit-check?project=${encodeURIComponent(project.id)}`;
+  const link = "ml-auto inline-flex items-center gap-1 text-orange hover:text-orange-soft";
+  return (
+    <div className="ml-[26px] mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg bg-canvas px-3 py-2 text-xs">
+      {f ? (
+        <>
+          <span className={`rounded-full px-2 py-0.5 ${f.band === "good" ? "bg-steel-bg text-steel-soft" : "bg-orange-bg text-orange-soft"}`}>
+            Fit Check {f.score} · {FIT_BANDS[f.band].title}
+          </span>
+          <span className="text-faint">saved {formatDate(f.at)}</span>
+          <Link href={href} className={link}>
+            Run it again <IconArrowRight size={12} aria-hidden />
+          </Link>
+          {f.band !== "good" && (
+            <span className="basis-full text-muted">
+              {f.capped ? "The cost of a mistake rules AI out" : "Below 70"}: write your reason to go ahead before ticking this.
+            </span>
+          )}
+        </>
+      ) : (
+        <>
+          <span className="text-faint">No Fit Check saved for this project.</span>
+          <Link href={href} className={link}>
+            Run the Fit Check <IconArrowRight size={12} aria-hidden />
+          </Link>
+        </>
+      )}
     </div>
   );
 }

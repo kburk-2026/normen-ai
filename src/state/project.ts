@@ -2,6 +2,9 @@ import { PHASES, type PhaseId } from "@/content/phases";
 import { CHECKPOINTS } from "@/content/lifecycle";
 import { DEMO_ADDED_PAGES, DEMO_PROJECT, DEMO_VERSION, OLD_SEED_TIME, SEED_TIME, allDefaultSections, PROJECT_STATUSES, type Project } from "@/content/demo";
 import { normalizeBlocks } from "@/content/blocks";
+import { FIT_BANDS } from "@/content/fitCheck";
+import type { FitResult } from "@/content/demo";
+import { LOG_LIMIT, backfillLog } from "./log";
 
 export type PhaseState = "passed" | "current" | "locked";
 
@@ -63,6 +66,32 @@ function fromOldSeed(at: string | undefined) {
   return at === OLD_SEED_TIME ? SEED_TIME : at;
 }
 
+/** A saved changelog, cleaned up; or, for a save from before changelogs, one built from what it records. */
+function normalizeLog(saved: Partial<Project>, base: Project | undefined): Project["log"] {
+  if (Array.isArray(saved.log)) {
+    return saved.log
+      .filter((e) => e && typeof e.at === "string" && typeof e.text === "string")
+      .map((e) => ({ at: e.at, text: e.text, ...(typeof e.key === "string" ? { key: e.key } : {}) }))
+      .slice(0, LOG_LIMIT);
+  }
+  if (base) return base.log;
+  return backfillLog({
+    createdAt: saved.createdAt ?? new Date().toISOString(),
+    passed: saved.passed ?? [],
+    passedAt: saved.passedAt ?? {},
+    overrides: saved.overrides ?? [],
+  });
+}
+
+/** The saved Fit Check result if it is well formed. A demo from before version 4 gets the seeded one. */
+function fitCheckOf(saved: Partial<Project>, isDemo: boolean): { fitCheck?: FitResult } {
+  const f = saved.fitCheck;
+  if (f && typeof f.score === "number" && f.band in FIT_BANDS && /^\d{4}-\d{2}-\d{2}$/.test(f.at)) {
+    return { fitCheck: { score: Math.max(0, Math.min(100, Math.round(f.score))), band: f.band, capped: f.capped === true, at: f.at } };
+  }
+  return isDemo && (saved.demoVersion ?? 0) < 4 && DEMO_PROJECT.fitCheck ? { fitCheck: DEMO_PROJECT.fitCheck } : {};
+}
+
 export function normalizeProject(saved: Partial<Project>): Project {
   const base = saved.id ? undefined : DEMO_PROJECT;
   // A save with no ID is the phase 1 demo: it gets the demo's written pages.
@@ -120,5 +149,7 @@ export function normalizeProject(saved: Partial<Project>): Project {
       ),
     overrides: saved.overrides ?? [],
     sections,
+    log: normalizeLog(saved, base),
+    ...fitCheckOf(saved, isDemo),
   };
 }

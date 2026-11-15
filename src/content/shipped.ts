@@ -13,6 +13,13 @@ export type ShippedEntry = {
 
 export const SHIPPED: ShippedEntry[] = [
   {
+    date: "2026-11-15",
+    kind: "Milestone",
+    label: "Milestone 12",
+    title: "Tools, changelog and a Fit Check that remembers",
+    body: "Every project page has a Tools menu: status, export, backup and restore in one place. Each project keeps a changelog that writes itself. The Fit Check can save its score to a project, where it shows as evidence on the Conceive checkpoint. Press ? for keyboard shortcuts.",
+  },
+  {
     date: "2026-11-14",
     kind: "Milestone",
     label: "Milestone 11",

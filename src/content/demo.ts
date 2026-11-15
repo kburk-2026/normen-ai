@@ -1,5 +1,6 @@
 import type { PhaseId } from "./phases";
 import type { Block } from "./blocks";
+import type { FitBand } from "./fitCheck";
 
 export type { Block };
 
@@ -31,6 +32,25 @@ export type Section = {
   updatedAt: string;
 };
 
+/** One line of a project's changelog. Normen writes these; people never do. */
+export type LogEntry = {
+  /** ISO timestamp. */
+  at: string;
+  text: string;
+  /** Set on entries that are written at most once, e.g. one "Edited" line per section per day. */
+  key?: string;
+};
+
+/** The latest Fit Check result saved to a project. */
+export type FitResult = {
+  score: number;
+  band: FitBand;
+  /** True when the serious-harm answer forced the lowest band. */
+  capped: boolean;
+  /** Date saved, YYYY-MM-DD. */
+  at: string;
+};
+
 export type Project = {
   id: string;
   name: string;
@@ -54,6 +74,10 @@ export type Project = {
   overrides: Override[];
   /** Sections by phase, in display order. */
   sections: Record<PhaseId, Section[]>;
+  /** The changelog, newest first. */
+  log: LogEntry[];
+  /** The latest saved Fit Check result, shown as evidence on the Conceive checkpoint. */
+  fitCheck?: FitResult;
 };
 
 /** Noon UTC, so the seed shows as 4 Nov in every time zone from UTC-11 to UTC+11. */
@@ -81,7 +105,7 @@ export const DEMO_ID = "demo";
  * A saved demo from an earlier version gets the new pages when it loads;
  * its edits stay, and a page deleted after that stays deleted.
  */
-export const DEMO_VERSION = 3;
+export const DEMO_VERSION = 4;
 export const DEMO_ADDED_PAGES: { phase: PhaseId; sectionId: string; since: number }[] = [
   { phase: "plan", sectionId: "plan-governance", since: 1 },
   { phase: "develop", sectionId: "develop-model-data", since: 2 },
@@ -99,7 +123,7 @@ export const DEMO_PROJECT: Project = {
   status: "In Progress",
   isDemo: true,
   demoVersion: DEMO_VERSION,
-  createdAt: "2026-10-01T00:00:00.000Z",
+  createdAt: "2026-10-01T12:00:00.000Z",
   updatedAt: SEED_TIME,
   activities: {
     "NRM-101": "done",
@@ -135,6 +159,13 @@ export const DEMO_PROJECT: Project = {
     },
   ],
   sections: demoSections(),
+  fitCheck: { score: 78, band: "good", capped: false, at: "2026-10-06" },
+  log: [
+    { at: "2026-10-21T12:00:00.000Z", text: "Plan checkpoint passed with an override" },
+    { at: "2026-10-07T12:00:00.000Z", text: "Conceive checkpoint passed" },
+    { at: "2026-10-06T12:00:00.000Z", text: "Fit Check saved: 78 out of 100 (Good fit for AI)" },
+    { at: "2026-10-01T12:00:00.000Z", text: "Project created" },
+  ],
 };
 
 /** The demo's written pages: the default sections, with blocks in the phases it has reached. */

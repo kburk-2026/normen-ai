@@ -1,10 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { IconAlertTriangle, IconArrowRight, IconCircleCheck, IconRefresh, IconTarget } from "@tabler/icons-react";
 import Mascot from "@/components/Mascot";
 import { FIT_BANDS, FIT_QUESTIONS, scoreFit, type FitBand } from "@/content/fitCheck";
+import { formatDate, today } from "@/lib/format";
+import { useWorkspace } from "@/state/ProjectProvider";
 
 /** Smooth scrolling, unless the user's system asks for less motion. */
 const scrollBehavior = (): ScrollBehavior =>
@@ -151,6 +154,8 @@ function Result({ answers, onStartOver }: { answers: Record<string, number>; onS
         ),
       )}
 
+      <SaveResult key={JSON.stringify(answers)} score={r.score} band={r.band} capped={r.capped} />
+
       <div className="mt-6 flex flex-wrap gap-3">
         {r.band === "good" && (
           <Link
@@ -169,6 +174,92 @@ function Result({ answers, onStartOver }: { answers: Record<string, number>; onS
         </button>
       </div>
     </section>
+  );
+}
+
+/**
+ * Save the result to a project, where it shows as evidence on the Conceive
+ * checkpoint. Arriving from a project's Tools menu (?project=ID) skips the picker.
+ */
+function SaveResult({ score, band, capped }: { score: number; band: FitBand; capped: boolean }) {
+  const { loaded, projects, saveFitCheck } = useWorkspace();
+  const asked = useSearchParams()?.get("project") ?? "";
+  const preset = projects.find((p) => p.id === asked);
+  const [chosen, setChosen] = useState("");
+  const [savedTo, setSavedTo] = useState<{ id: string; name: string }>();
+  const selectId = useId();
+
+  if (!loaded) return null;
+  if (projects.length === 0)
+    return (
+      <p className="mt-6 border-t border-line pt-4 text-sm text-muted">
+        To keep this result, create a project in the{" "}
+        <Link href="/workbench" className="text-orange hover:text-orange-soft">
+          Project Console
+        </Link>{" "}
+        and run the Fit Check from its Tools menu.
+      </p>
+    );
+
+  const target = preset ?? projects.find((p) => p.id === chosen) ?? projects[0];
+  const save = () => {
+    saveFitCheck(target.id, { score, band, capped, at: today() });
+    setSavedTo({ id: target.id, name: target.name });
+  };
+
+  return (
+    <div className="mt-6 border-t border-line pt-4 text-sm">
+      <div className="flex flex-wrap items-center gap-3">
+        {preset ? (
+          <span className="text-muted">
+            For <span className="text-ink">{preset.name}</span>
+          </span>
+        ) : (
+          <>
+            <label htmlFor={selectId} className="text-muted">
+              Save to
+            </label>
+            <select
+              id={selectId}
+              value={target.id}
+              onChange={(e) => {
+                setChosen(e.target.value);
+                setSavedTo(undefined);
+              }}
+              className="max-w-full rounded-full bg-canvas px-3 py-1.5 text-ink ring-1 ring-line focus:outline-none focus-visible:ring-2 focus-visible:ring-orange"
+            >
+              {projects.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
+          </>
+        )}
+        <button
+          type="button"
+          onClick={save}
+          disabled={savedTo?.id === target.id}
+          className="rounded-full bg-orange px-4 py-1.5 font-medium text-orange-ink transition-colors hover:bg-orange-soft disabled:cursor-default disabled:bg-canvas disabled:font-normal disabled:text-faint"
+        >
+          {savedTo?.id === target.id ? "Saved" : "Save result"}
+        </button>
+      </div>
+      {target.fitCheck && !savedTo && (
+        <p className="mt-2 text-xs text-faint">
+          This replaces the result saved {formatDate(target.fitCheck.at)} ({target.fitCheck.score} out of 100). The old score stays
+          in the project&apos;s changelog.
+        </p>
+      )}
+      {savedTo && (
+        <p className="mt-2 text-steel-soft">
+          Saved to {savedTo.name}.{" "}
+          <Link href={`/workbench/${savedTo.id}/conceive/conceive-checklist`} className="text-orange hover:text-orange-soft">
+            See it on the Conceive checkpoint
+          </Link>
+        </p>
+      )}
+    </div>
   );
 }
 

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { IconChevronRight, IconEye, IconPencil } from "@tabler/icons-react";
 import BlockEditor from "@/components/blocks/BlockEditor";
+import { ToolsMenu } from "./ProjectTools";
 import PhaseChecklist from "@/components/workbench/PhaseChecklist";
 import { PHASES, type PhaseId } from "@/content/phases";
 import { ACTIVITIES } from "@/content/lifecycle";
@@ -38,12 +39,11 @@ export default function SectionView({ phase: phaseId, section }: { phase: PhaseI
           {phase.name} <IconChevronRight size={14} aria-hidden />{" "}
           <span className="text-ink">{section.title || "Untitled section"}</span>
         </p>
-        {writable && (
-          <div className="flex items-center gap-3 print:hidden">
-            {edit && <SaveStatus />}
-            <ModeSwitch mode={mode} onChange={setMode} />
-          </div>
-        )}
+        <div className="flex flex-wrap items-center gap-3">
+          {edit && <SaveStatus />}
+          <ToolsMenu />
+          {writable && <ModeSwitch mode={mode} onChange={setMode} />}
+        </div>
       </div>
       {section.kind === "custom" && edit ? (
         <EditableTitle phase={phaseId} section={section} />

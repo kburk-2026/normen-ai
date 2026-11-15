@@ -2,11 +2,13 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import type { Block, BlockType } from "@/content/blocks";
-import { DEMO_ID, DEMO_PROJECT, type ActivityStatus, type Project, type ProjectStatus, type Section } from "@/content/demo";
+import { DEMO_ID, DEMO_PROJECT, type ActivityStatus, type FitResult, type Project, type ProjectStatus, type Section } from "@/content/demo";
+import { FIT_BANDS } from "@/content/fitCheck";
 import type { PhaseId } from "@/content/phases";
 import { today } from "@/lib/format";
 import * as P from "./project";
 import * as W from "./workspace";
+import { addLog, logEdit, phaseName } from "./log";
 
 // ---------- Workspace: every project, saved to localStorage ----------
 
@@ -27,6 +29,8 @@ type WorkspaceValue = {
   deleteProject: (id: string) => void;
   renameProject: (id: string, name: string, blurb: string) => void;
   setProjectStatus: (id: string, status: ProjectStatus) => void;
+  /** Save a Fit Check result to a project, replacing any earlier one. */
+  saveFitCheck: (id: string, result: FitResult) => void;
   /** Replace every project, from a backup file. */
   replaceWorkspace: (ws: W.Workspace) => void;
   /** Put the demo project back to its seeded state (adding it back if it was deleted). */
@@ -129,8 +133,16 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
       },
       deleteProject: (id) => setProjects((list) => list.filter((p) => p.id !== id)),
       renameProject: (id, name, blurb) =>
-        updateProject(id, (p) => ({ ...p, name: name.trim() || p.name, blurb: blurb.trim() })),
-      setProjectStatus: (id, status) => updateProject(id, (p) => ({ ...p, status })),
+        updateProject(id, (p) => {
+          const next = { ...p, name: name.trim() || p.name, blurb: blurb.trim() };
+          return next.name === p.name ? next : addLog(next, `Project renamed: ${p.name} to ${next.name}`);
+        }),
+      setProjectStatus: (id, status) =>
+        updateProject(id, (p) => (p.status === status ? p : addLog({ ...p, status }, `Status changed: ${p.status} to ${status}`))),
+      saveFitCheck: (id, result) =>
+        updateProject(id, (p) =>
+          addLog({ ...p, fitCheck: result }, `Fit Check saved: ${result.score} out of 100 (${FIT_BANDS[result.band].title})`),
+        ),
       replaceWorkspace: (next) => setWs(next),
       resetDemo: () =>
         setProjects((list) =>
@@ -175,6 +187,12 @@ type ProjectValue = {
 
 const ProjectContext = createContext<ProjectValue | null>(null);
 
+/** Add a changelog line, but only if the rule actually changed the project. */
+const logged = (before: Project, after: Project, text: string) => (after === before ? after : addLog(after, text));
+/** A block change: one "Edited" line for that section today. */
+const edited = (before: Project, after: Project, phase: PhaseId, sectionId: string) =>
+  after === before ? after : logEdit(after, phase, sectionId, today());
+
 /** Binds the Workbench components to one project from the workspace. */
 export function ProjectScope({ project, children }: { project: Project; children: React.ReactNode }) {
   const { updateProject, resetDemo } = useWorkspace();
@@ -188,28 +206,48 @@ export function ProjectScope({ project, children }: { project: Project; children
       setStatus: (activityId, status) =>
         update((p) => ({ ...p, activities: { ...p.activities, [activityId]: status } })),
       toggleCheck: (criterionId) => update((p) => P.toggleCheck(p, criterionId)),
-      pass: (phase) => update((p) => P.pass(p, phase, today())),
-      passWithOverride: (phase, reason) => update((p) => P.passWithOverride(p, phase, reason, today())),
+      pass: (phase) => update((p) => logged(p, P.pass(p, phase, today()), `${phaseName(phase)} checkpoint passed`)),
+      passWithOverride: (phase, reason) =>
+        update((p) =>
+          logged(p, P.passWithOverride(p, phase, reason, today()), `${phaseName(phase)} checkpoint passed with an override`),
+        ),
       reset: () => {
         if (project.isDemo) resetDemo();
       },
       addSection: (phase) => {
         const [, section] = W.addSection(project, phase);
-        update((p) => ({ ...p, sections: { ...p.sections, [phase]: [...p.sections[phase], section] } }));
+        update((p) =>
+          addLog(
+            { ...p, sections: { ...p.sections, [phase]: [...p.sections[phase], section] } },
+            `Section added in ${phaseName(phase)}: ${section.title}`,
+          ),
+        );
         return section;
       },
-      renameSection: (phase, sectionId, title) => update((p) => W.renameSection(p, phase, sectionId, title)),
+      renameSection: (phase, sectionId, title) =>
+        update((p) => {
+          const before = p.sections[phase].find((x) => x.id === sectionId)?.title;
+          return logged(p, W.renameSection(p, phase, sectionId, title), `Section renamed in ${phaseName(phase)}: ${before} to ${title}`);
+        }),
       moveSection: (phase, sectionId, delta) => update((p) => W.moveSection(p, phase, sectionId, delta)),
-      deleteSection: (phase, sectionId) => update((p) => W.deleteSection(p, phase, sectionId)),
+      deleteSection: (phase, sectionId) =>
+        update((p) => {
+          const before = p.sections[phase].find((x) => x.id === sectionId)?.title || "Untitled section";
+          return logged(p, W.deleteSection(p, phase, sectionId), `Section deleted in ${phaseName(phase)}: ${before}`);
+        }),
       addBlock: (phase, sectionId, type) => {
         const [, block] = W.addBlock(project, phase, sectionId, type);
-        update((p) => W.insertBlock(p, phase, sectionId, block, Infinity));
+        update((p) => edited(p, W.insertBlock(p, phase, sectionId, block, Infinity), phase, sectionId));
         return block;
       },
-      insertBlock: (phase, sectionId, block, index) => update((p) => W.insertBlock(p, phase, sectionId, block, index)),
-      updateBlock: (phase, sectionId, blockId, fn) => update((p) => W.updateBlock(p, phase, sectionId, blockId, fn)),
-      moveBlock: (phase, sectionId, blockId, to) => update((p) => W.moveBlock(p, phase, sectionId, blockId, to)),
-      deleteBlock: (phase, sectionId, blockId) => update((p) => W.deleteBlock(p, phase, sectionId, blockId)),
+      insertBlock: (phase, sectionId, block, index) =>
+        update((p) => edited(p, W.insertBlock(p, phase, sectionId, block, index), phase, sectionId)),
+      updateBlock: (phase, sectionId, blockId, fn) =>
+        update((p) => edited(p, W.updateBlock(p, phase, sectionId, blockId, fn), phase, sectionId)),
+      moveBlock: (phase, sectionId, blockId, to) =>
+        update((p) => edited(p, W.moveBlock(p, phase, sectionId, blockId, to), phase, sectionId)),
+      deleteBlock: (phase, sectionId, blockId) =>
+        update((p) => edited(p, W.deleteBlock(p, phase, sectionId, blockId), phase, sectionId)),
     }),
     [project, update, resetDemo],
   );

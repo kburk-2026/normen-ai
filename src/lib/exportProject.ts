@@ -1,6 +1,8 @@
 import { PHASES, type PhaseId } from "@/content/phases";
 import { ACTIVITIES, CHECKPOINTS } from "@/content/lifecycle";
-import type { ActivityStatus, Project } from "@/content/demo";
+import type { ActivityStatus, FitResult, Project } from "@/content/demo";
+import { FIT_BANDS } from "@/content/fitCheck";
+import { logByDay } from "@/state/log";
 import {
   CALLOUT_LABEL,
   SWOT_KEYS,
@@ -61,7 +63,16 @@ export function projectToMarkdown(project: Project, exportedOn: string): string 
       out.push("", `### ${section.title}`, "", ...checklistToMarkdown(project, phase.id));
     }
   }
+  if (project.log.length) {
+    out.push("", "## Changelog", "");
+    for (const d of logByDay(project.log)) for (const e of d.entries) out.push(`- ${formatDate(d.day)}: ${e.text}`);
+  }
   return out.join("\n") + "\n";
+}
+
+/** The saved Fit Check result in one sentence, shared by the Markdown and print exports. */
+export function fitCheckLine(f: FitResult) {
+  return `Fit Check: ${f.score} out of 100 (${FIT_BANDS[f.band].title}), saved ${formatDate(f.at)}.`;
 }
 
 /** A phase's Checklist: activities, checkpoint criteria and any override. */
@@ -72,6 +83,7 @@ function checklistToMarkdown(project: Project, phaseId: PhaseId): string[] {
 
   out.push("", "**Checkpoint**", "");
   for (const c of CHECKPOINTS.filter((x) => x.phase === phaseId)) out.push(`- ${project.checks[c.id] ? "[x]" : "[ ]"} ${c.text}`);
+  if (phaseId === "conceive" && project.fitCheck) out.push("", fitCheckLine(project.fitCheck));
 
   const o = overrideFor(project, phaseId);
   if (o) {

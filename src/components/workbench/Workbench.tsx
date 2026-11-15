@@ -1,16 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { IconDownload, IconLayoutKanban, IconLayoutList, IconPrinter, IconRefresh } from "@tabler/icons-react";
 import { ACTIVITIES } from "@/content/lifecycle";
 import type { PhaseId } from "@/content/phases";
+import { ToolsMenu, useProjectTools } from "@/components/projects/ProjectTools";
 import { useProject } from "@/state/ProjectProvider";
-import { projectToMarkdown, slugify } from "@/lib/exportProject";
-import { today } from "@/lib/format";
 import BoardView from "./BoardView";
 import ListView from "./ListView";
-import ProjectPrint from "./ProjectPrint";
 
 type View = "list" | "board";
 
@@ -20,42 +18,7 @@ export default function Workbench({ view }: { view: View }) {
   const [justPassed, setJustPassed] = useState<PhaseId | null>(null);
   const done = ACTIVITIES.filter((a) => statusOf(a.id) === "done").length;
 
-  // The print view's images load only for the PDF button: it turns them on, waits for
-  // them to arrive (4 seconds at most), then opens the print dialog.
-  const [printImages, setPrintImages] = useState(false);
-  const printView = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (!printImages) return;
-    let cancelled = false;
-    const pending = [...(printView.current?.querySelectorAll("img") ?? [])]
-      .filter((img) => !img.complete)
-      .map(
-        (img) =>
-          new Promise<void>((done) => {
-            img.addEventListener("load", () => done(), { once: true });
-            img.addEventListener("error", () => done(), { once: true });
-          }),
-      );
-    const timeout = new Promise<void>((done) => window.setTimeout(done, 4000));
-    Promise.race([Promise.all(pending), timeout]).then(() => {
-      if (cancelled) return;
-      window.print();
-      setPrintImages(false);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [printImages]);
-
-  const downloadMarkdown = () => {
-    const blob = new Blob([projectToMarkdown(project, today())], { type: "text/markdown;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${slugify(project.name)}.md`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
+  const tools = useProjectTools();
 
   return (
     <>
@@ -67,10 +30,10 @@ export default function Workbench({ view }: { view: View }) {
             <p className="mt-2 max-w-xl text-muted">{project.blurb}</p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <ExportButton onClick={downloadMarkdown} label="Download the project as Markdown">
+            <ExportButton onClick={tools.downloadMarkdown} label="Download the project as Markdown">
               <IconDownload size={16} aria-hidden /> Markdown
             </ExportButton>
-            <ExportButton onClick={() => setPrintImages(true)} label="Print the project or save it as a PDF">
+            <ExportButton onClick={tools.print} label="Print the project or save it as a PDF">
               <IconPrinter size={16} aria-hidden /> PDF
             </ExportButton>
             {project.isDemo && (
@@ -93,6 +56,7 @@ export default function Workbench({ view }: { view: View }) {
                 <IconLayoutKanban size={16} aria-hidden /> Board
               </ViewLink>
             </div>
+            <ToolsMenu />
           </div>
         </div>
 
@@ -118,9 +82,6 @@ export default function Workbench({ view }: { view: View }) {
         <div className="mt-8">
           {view === "list" ? <ListView justPassed={justPassed} onPassed={setJustPassed} /> : <BoardView />}
         </div>
-      </div>
-      <div ref={printView}>
-        <ProjectPrint withImages={printImages} />
       </div>
     </>
   );

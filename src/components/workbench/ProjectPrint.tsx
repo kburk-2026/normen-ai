@@ -4,7 +4,7 @@ import { PHASES } from "@/content/phases";
 import { ACTIVITIES, CHECKPOINTS } from "@/content/lifecycle";
 import { useProject } from "@/state/ProjectProvider";
 import { openCriteria, overrideFor } from "@/state/project";
-import { phaseLabel } from "@/lib/exportProject";
+import { fitCheckLine, phaseLabel } from "@/lib/exportProject";
 import { formatDate, today } from "@/lib/format";
 import {
   CALLOUT_LABEL,
@@ -84,6 +84,7 @@ export default function ProjectPrint({ withImages }: { withImages: boolean }) {
                       </li>
                     ))}
                   </ul>
+                  {phase.id === "conceive" && project.fitCheck && <p className="mt-1">{fitCheckLine(project.fitCheck)}</p>}
                   {o && (
                     <p className="mt-2 border-l-2 border-neutral-400 pl-2 text-neutral-700">
                       Override logged {formatDate(o.at)}: {o.reason}{" "}

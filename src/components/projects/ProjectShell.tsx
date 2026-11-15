@@ -23,6 +23,7 @@ import { PHASES, type PhaseId } from "@/content/phases";
 import { PROJECT_STATUSES, type Section } from "@/content/demo";
 import { ProjectScope, useProject, useWorkspace } from "@/state/ProjectProvider";
 import { phaseState } from "@/state/project";
+import { ProjectToolsProvider } from "./ProjectTools";
 import SectionView from "./SectionView";
 
 type Route =
@@ -81,16 +82,18 @@ function Shell({ route }: { route: Route }) {
     route.kind === "section" ? project.sections[route.phase].find((s) => s.id === route.sectionId) : undefined;
 
   return (
-    <div className="mx-auto grid max-w-7xl gap-0 px-5 py-8 md:grid-cols-[260px_1fr] md:gap-8">
-      <Sidebar route={route} />
-      <div className="min-w-0 pt-6 md:pt-0">
-        {route.kind === "list" && <Workbench view="list" />}
-        {route.kind === "board" && <Workbench view="board" />}
-        {route.kind === "section" &&
-          (section ? <SectionView phase={route.phase} section={section} /> : <NotFound what="page" />)}
-        {route.kind === "bad" && <NotFound what="page" />}
+    <ProjectToolsProvider current={route.kind === "section" && section ? { phase: route.phase, sectionId: section.id } : undefined}>
+      <div className="mx-auto grid max-w-7xl gap-0 px-5 py-8 md:grid-cols-[260px_1fr] md:gap-8">
+        <Sidebar route={route} />
+        <div className="min-w-0 pt-6 md:pt-0">
+          {route.kind === "list" && <Workbench view="list" />}
+          {route.kind === "board" && <Workbench view="board" />}
+          {route.kind === "section" &&
+            (section ? <SectionView phase={route.phase} section={section} /> : <NotFound what="page" />)}
+          {route.kind === "bad" && <NotFound what="page" />}
+        </div>
       </div>
-    </div>
+    </ProjectToolsProvider>
   );
 }
 

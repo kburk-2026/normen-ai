@@ -180,6 +180,19 @@ Milestones (a mockup before each, Karen approves before any push):
     referenced by its live address. The picker's "coming later" list is gone.
 12. Tools menu: backup and restore, project changelog, status, keyboard
     shortcuts. Link the Fit Check score to the Conceive checkpoint.
+    **Done.** Karen approved the mockup 2026-11-14. `ProjectToolsProvider`
+    (`src/components/projects/ProjectTools.tsx`) wraps every project page and
+    owns the print view, the dialogs (status, changelog, shortcuts, restore)
+    and the keyboard shortcuts; `ToolsMenu` is the button. Tools is a second
+    way in: status stays in the sidebar, export on All phases, backup on the
+    Console. Changelog rules in `src/state/log.ts`: written by the provider's
+    actions, newest first, 300 lines, one "Edited" line per section per day;
+    older saves are backfilled from creation and checkpoint dates only.
+    Shortcuts: ? E [ ] (switchable off, `normen:keys`), plus Alt + arrows and
+    Esc. Fit Check: `/fit-check?project=<id>` skips the picker; the result is
+    `project.fitCheck` (latest only) and shows under criterion C-102 as
+    evidence. It never ticks or blocks the criterion. Demo version 4 seeds a
+    Fit Check result.
 13. Scorecard dashboard (own targets, logged readings, status per metric).
 14. Pulse (weekly drift, flagged outputs, usage trends; incident log).
 15. Guardrails page with risk tiering (tier decides required guardrails).
@@ -211,4 +224,4 @@ the link with a real folder, run:
   automatically.
 - Commit as `343284727+kburk-2026@users.noreply.github.com` (set in this repo's
   git config); GitHub rejects pushes that expose the private email.
-- Phase 1 is complete. Phase 2 milestones 7 to 11 are done. Next: milestone 12 (Tools menu, Fit Check link).
+- Phase 1 is complete. Phase 2 milestones 7 to 12 are done. Next: milestone 13 (Scorecard dashboard).

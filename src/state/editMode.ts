@@ -1,36 +1,49 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
-export type Mode = "edit" | "view";
-const KEY = "normen:mode";
-
-function read(): Mode {
-  try {
-    return localStorage.getItem(KEY) === "view" ? "view" : "edit";
-  } catch {
-    return "edit";
-  }
+/**
+ * A small preference kept in this browser. Every component using it re-renders
+ * when it changes, whether the change came from this tab or another one.
+ */
+function createPref<T extends string>(key: string, values: readonly T[], fallback: T) {
+  const listeners = new Set<() => void>();
+  const read = (): T => {
+    try {
+      const v = localStorage.getItem(key) as T | null;
+      return v && values.includes(v) ? v : fallback;
+    } catch {
+      return fallback; // Blocked storage.
+    }
+  };
+  const subscribe = (fn: () => void) => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === key) fn();
+    };
+    listeners.add(fn);
+    window.addEventListener("storage", onStorage);
+    return () => {
+      listeners.delete(fn);
+      window.removeEventListener("storage", onStorage);
+    };
+  };
+  const set = (v: T) => {
+    try {
+      localStorage.setItem(key, v);
+    } catch {
+      // Blocked storage: nothing to remember the choice in.
+    }
+    listeners.forEach((fn) => fn());
+  };
+  return { read, set, use: () => useSyncExternalStore(subscribe, read, () => fallback) };
 }
 
-/** Edit or View, remembered in this browser and kept in step across tabs. */
+export type Mode = "edit" | "view";
+export const modePref = createPref<Mode>("normen:mode", ["edit", "view"], "edit");
+/** Whether single-key shortcuts (?, E, [ and ]) are on. They can be turned off for accessibility. */
+export const keysPref = createPref<"on" | "off">("normen:keys", ["on", "off"], "on");
+
+/** Edit or View, remembered in this browser. */
 export function useEditMode(): [Mode, (m: Mode) => void] {
-  // Section pages render only in the browser (after projects load), so reading storage here is safe.
-  const [mode, setMode] = useState<Mode>(() => (typeof window === "undefined" ? "edit" : read()));
-  useEffect(() => {
-    const onStorage = (e: StorageEvent) => {
-      if (e.key === KEY) setMode(read());
-    };
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
-  }, []);
-  const set = useCallback((m: Mode) => {
-    setMode(m);
-    try {
-      localStorage.setItem(KEY, m);
-    } catch {
-      // Blocked storage: the choice lasts for this page only.
-    }
-  }, []);
-  return [mode, set];
+  return [modePref.use(), modePref.set];
 }

@@ -70,6 +70,7 @@ export function createProject(name: string, blurb: string, fromDemo: boolean): P
         passedAt: {},
         overrides: [],
         sections: allDefaultSections(now),
+        fitCheck: undefined,
       };
   return {
     ...base,
@@ -80,6 +81,8 @@ export function createProject(name: string, blurb: string, fromDemo: boolean): P
     isDemo: false,
     createdAt: now,
     updatedAt: now,
+    demoVersion: undefined,
+    log: [{ at: now, text: fromDemo ? "Project created from the demo" : "Project created" }],
   };
 }
 
@@ -92,6 +95,8 @@ export function duplicateProject(project: Project): Project {
     isDemo: false,
     createdAt: now,
     updatedAt: now,
+    demoVersion: undefined,
+    log: [{ at: now, text: `Project created as a copy of ${project.name}` }],
   };
 }
 
