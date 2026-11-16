@@ -15,6 +15,13 @@ export const SHIPPED: ShippedEntry[] = [
   {
     date: "2026-11-15",
     kind: "Milestone",
+    label: "Milestone 15",
+    title: "Guardrails and risk tiers",
+    body: "Five questions set each project's risk tier: Low, Medium or High. The tier decides which of the 14 guardrails are required, and each guardrail gets a status. Each phase's Checklist shows the same, and the Field Guide explains the rules.",
+  },
+  {
+    date: "2026-11-15",
+    kind: "Milestone",
     label: "Milestone 14",
     title: "Pulse",
     body: "Once a project is in use, log a check-in each week: uses, flagged outputs and accuracy on a reviewed sample. Set two alert lines and Pulse marks the weeks that cross them. An incident log tracks every report from first notice to fix.",

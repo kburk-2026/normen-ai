@@ -1,10 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import { IconAlertTriangle, IconLock, IconLockOpen, IconShieldCheck } from "@tabler/icons-react";
 import { PHASES, STAGES, type PhaseId } from "@/content/phases";
 import { ACTIVITIES, GUARDRAILS, GUARDRAIL_LABELS } from "@/content/lifecycle";
 import { useProject } from "@/state/ProjectProvider";
 import { phaseState, type PhaseState } from "@/state/project";
+import { requiredFor, stateOf, tierOf } from "@/state/guardrails";
+import { GUARD_STATUS_PILL } from "@/components/guardrails/ProjectGuardrails";
 import CheckpointPanel from "./CheckpointPanel";
 import StatusButton from "./StatusButton";
 
@@ -23,6 +26,8 @@ export default function PhaseChecklist({
   const state = phaseState(project, id);
   const acts = ACTIVITIES.filter((a) => a.phase === id);
   const guards = GUARDRAILS.filter((g) => g.phase === id);
+  const tier = tierOf(project.guardrails);
+  const required = new Set(tier ? requiredFor(tier) : []);
 
   return (
     <>
@@ -48,15 +53,25 @@ export default function PhaseChecklist({
             <IconShieldCheck size={14} aria-hidden /> Guardrails
           </h3>
           <ul className="mt-2 space-y-2">
-            {guards.map((g) => (
-              <li key={g.id} className="text-sm">
-                <span className="mr-2 rounded-full bg-steel-bg px-2 py-0.5 text-xs text-steel-soft">
-                  {GUARDRAIL_LABELS[g.category]}
-                </span>
-                {g.title}
-              </li>
-            ))}
+            {guards.map((g) => {
+              const st = stateOf(project.guardrails, g.id).status;
+              return (
+                <li key={g.id} className="text-sm">
+                  <span className="mr-2 rounded-full bg-steel-bg px-2 py-0.5 text-xs text-steel-soft">
+                    {GUARDRAIL_LABELS[g.category]}
+                  </span>
+                  {g.title}
+                  <span className="mt-1 flex flex-wrap gap-1.5">
+                    {required.has(g.id) && <span className="rounded-full bg-orange-bg px-2 py-0.5 text-[11px] text-orange-soft">Required</span>}
+                    <span className={`rounded-full px-2 py-0.5 text-[11px] ${GUARD_STATUS_PILL[st]}`}>{st}</span>
+                  </span>
+                </li>
+              );
+            })}
           </ul>
+          <Link href={`/workbench/${project.id}/guardrails`} className="mt-3 inline-block text-xs text-orange hover:text-orange-soft">
+            {tier ? `${tier} tier: update guardrails` : "Set the risk tier"}
+          </Link>
         </div>
         <CheckpointPanel phase={id} justPassed={justPassed} onPassed={onPassed} />
       </div>

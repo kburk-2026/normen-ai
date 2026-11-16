@@ -7,6 +7,7 @@ import type { FitResult } from "@/content/demo";
 import { LOG_LIMIT, backfillLog } from "./log";
 import { normalizeScorecard } from "./scorecard";
 import { normalizePulse } from "./pulse";
+import { normalizeGuardrailPlan } from "./guardrails";
 
 export type PhaseState = "passed" | "current" | "locked";
 
@@ -159,5 +160,10 @@ export function normalizeProject(saved: Partial<Project>): Project {
         ? DEMO_PROJECT.scorecard
         : normalizeScorecard(saved.scorecard),
     pulse: normalizePulse(saved.pulse),
+    // A demo from before version 6 has no guardrail plan yet: give it the seeded one.
+    guardrails:
+      saved.guardrails === undefined && isDemo && (saved.demoVersion ?? 0) < 6
+        ? DEMO_PROJECT.guardrails
+        : normalizeGuardrailPlan(saved.guardrails),
   };
 }

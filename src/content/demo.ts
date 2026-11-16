@@ -3,6 +3,7 @@ import type { Block } from "./blocks";
 import type { FitBand } from "./fitCheck";
 import type { Scorecard } from "./scorecard";
 import { emptyPulse, type Pulse } from "./pulse";
+import type { GuardrailPlan } from "./riskTier";
 
 export type { Block };
 
@@ -84,6 +85,8 @@ export type Project = {
   scorecard: Scorecard;
   /** Weekly check-ins, incidents and alert lines, once the system is in use. */
   pulse: Pulse;
+  /** Risk tier answers and the status of each guardrail. */
+  guardrails: GuardrailPlan;
 };
 
 /** Noon UTC, so the seed shows as 4 Nov in every time zone from UTC-11 to UTC+11. */
@@ -111,7 +114,7 @@ export const DEMO_ID = "demo";
  * A saved demo from an earlier version gets the new pages when it loads;
  * its edits stay, and a page deleted after that stays deleted.
  */
-export const DEMO_VERSION = 5;
+export const DEMO_VERSION = 6;
 export const DEMO_ADDED_PAGES: { phase: PhaseId; sectionId: string; since: number }[] = [
   { phase: "plan", sectionId: "plan-governance", since: 1 },
   { phase: "develop", sectionId: "develop-model-data", since: 2 },
@@ -169,6 +172,19 @@ export const DEMO_PROJECT: Project = {
   scorecard: demoScorecard(),
   // The demo has not launched, so its Pulse starts empty.
   pulse: emptyPulse(),
+  // Claim notes hold health details, so the demo is High tier. The privacy review is still in
+  // progress, matching the Plan checkpoint's open privacy criterion.
+  guardrails: {
+    answers: { people: 1, data: 2, audience: 1, harm: 1, review: 0 },
+    statuses: {
+      "G-101": { status: "In place", reason: "" },
+      "G-102": { status: "In place", reason: "" },
+      "G-201": { status: "In progress", reason: "" },
+      "G-202": { status: "In place", reason: "" },
+      "G-301": { status: "In progress", reason: "" },
+      "G-302": { status: "In place", reason: "" },
+    },
+  },
   log: [
     { at: "2026-10-21T12:00:00.000Z", text: "Plan checkpoint passed with an override" },
     { at: "2026-10-07T12:00:00.000Z", text: "Conceive checkpoint passed" },

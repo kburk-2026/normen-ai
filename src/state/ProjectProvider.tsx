@@ -4,6 +4,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import type { Block, BlockType } from "@/content/blocks";
 import type { Reading } from "@/content/scorecard";
 import type { AlertLines, CheckIn, Incident } from "@/content/pulse";
+import type { GuardrailStatus } from "@/content/riskTier";
 import { DEMO_ID, DEMO_PROJECT, type ActivityStatus, type FitResult, type Project, type ProjectStatus, type Section } from "@/content/demo";
 import { FIT_BANDS } from "@/content/fitCheck";
 import type { PhaseId } from "@/content/phases";
@@ -12,6 +13,7 @@ import * as P from "./project";
 import * as W from "./workspace";
 import * as S from "./scorecard";
 import * as PL from "./pulse";
+import * as G from "./guardrails";
 import { addLog, logEdit, phaseName } from "./log";
 
 // ---------- Workspace: every project, saved to localStorage ----------
@@ -204,6 +206,9 @@ type ProjectValue = {
   updateIncident: (id: string, patch: Partial<Omit<Incident, "id" | "number">>) => void;
   deleteIncident: (id: string) => { incident: Incident; index: number } | undefined;
   restoreIncident: (saved: { incident: Incident; index: number }) => void;
+  setTierAnswer: (questionId: string, answer: number) => void;
+  setGuardrailStatus: (id: string, status: GuardrailStatus) => void;
+  setGuardrailReason: (id: string, reason: string) => void;
 };
 
 const ProjectContext = createContext<ProjectValue | null>(null);
@@ -301,6 +306,9 @@ export function ProjectScope({ project, children }: { project: Project; children
         return saved;
       },
       restoreIncident: (saved) => update((p) => PL.restoreIncident(p, saved)),
+      setTierAnswer: (questionId, answer) => update((p) => G.setAnswer(p, questionId, answer, today())),
+      setGuardrailStatus: (id, status) => update((p) => G.setGuardrailStatus(p, id, status)),
+      setGuardrailReason: (id, reason) => update((p) => G.setGuardrailReason(p, id, reason, today())),
     }),
     [project, update, resetDemo],
   );

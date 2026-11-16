@@ -226,6 +226,18 @@ Milestones (a mockup before each, Karen approves before any push):
     in words, arrow keys read each week, table holds every number. The demo
     has not launched, so its Pulse is empty. Exports skip Pulse when empty.
 15. Guardrails page with risk tiering (tier decides required guardrails).
+    **Done.** Karen approved the mockup 2026-11-15. Route
+    `/workbench/<id>/guardrails` (sidebar link under Pulse); `/guardrails`
+    lists every project's tier and coverage plus the tier rules. Questions
+    and tier rules in `src/content/riskTier.ts` (Claude's design, labeled in
+    the Field Guide's new "Risk tiers" section), rules in
+    `src/state/guardrails.ts`, UI in `src/components/guardrails/`. Tier =
+    highest tier any answer reaches; none until all five are answered. Low
+    requires 6 guardrails, Medium 11, High all 14. Statuses: To do, In
+    progress, In place, Not needed (a required one asks for a reason).
+    Each phase's Checklist shows Required and the status. Record only.
+    Demo version 6 seeds answers (High: sensitive data) and statuses, with
+    the privacy review In progress to match the open Plan criterion.
 16. ROI model (also as a calculator block).
 17. Timeline view in the Workbench (uses checkpoint pass dates).
 18. Curriculum Program Designer case study (needs Karen's material).
@@ -254,4 +266,4 @@ the link with a real folder, run:
   automatically.
 - Commit as `343284727+kburk-2026@users.noreply.github.com` (set in this repo's
   git config); GitHub rejects pushes that expose the private email.
-- Phase 1 is complete. Phase 2 milestones 7 to 14 are done. Next: milestone 15 (Guardrails page with risk tiering).
+- Phase 1 is complete. Phase 2 milestones 7 to 15 are done. Next: milestone 16 (ROI model).

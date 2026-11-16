@@ -1,5 +1,6 @@
 import { IconBook } from "@tabler/icons-react";
 import SourceTag from "@/components/SourceTag";
+import TierRules from "@/components/guardrails/TierRules";
 import { PHASES, STAGES, type StageId } from "@/content/phases";
 import { ACTIVITIES, CHECKPOINTS, GUARDRAILS, GUARDRAIL_LABELS, SCORECARD } from "@/content/lifecycle";
 
@@ -41,6 +42,7 @@ export default function Page() {
             </li>
           ))}
           <li><a href="#additions" className="hover:text-ink">What Claude added, and why</a></li>
+          <li><a href="#tiers" className="hover:text-ink">Risk tiers</a></li>
         </ul>
       </nav>
 
@@ -173,6 +175,9 @@ export default function Page() {
               </div>
             ))}
           </dl>
+        </section>
+        <section id="tiers" className="mt-12 scroll-mt-24">
+          <TierRules />
         </section>
       </div>
     </section>

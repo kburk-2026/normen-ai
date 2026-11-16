@@ -3,6 +3,7 @@ import type { PhaseId } from "@/content/phases";
 import { newBlock, type Block, type BlockType } from "@/content/blocks";
 import { emptyScorecard } from "@/content/scorecard";
 import { emptyPulse } from "@/content/pulse";
+import { emptyGuardrailPlan } from "@/content/riskTier";
 import { normalizeProject } from "./project";
 
 /** Everything Normen stores in the browser. */
@@ -75,6 +76,7 @@ export function createProject(name: string, blurb: string, fromDemo: boolean): P
         fitCheck: undefined,
         scorecard: emptyScorecard(),
         pulse: emptyPulse(),
+        guardrails: emptyGuardrailPlan(),
       };
   return {
     ...base,

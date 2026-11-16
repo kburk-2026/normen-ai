@@ -1,12 +1,13 @@
 "use client";
 
 import { PHASES } from "@/content/phases";
-import { ACTIVITIES, CHECKPOINTS } from "@/content/lifecycle";
+import { ACTIVITIES, CHECKPOINTS, GUARDRAILS } from "@/content/lifecycle";
 import { useProject } from "@/state/ProjectProvider";
 import { openCriteria, overrideFor } from "@/state/project";
 import { fitCheckLine, phaseLabel } from "@/lib/exportProject";
 import { STATUS_ORDER, allMetrics, recordOf, statusCounts, statusOf } from "@/state/scorecard";
 import { pastAlert } from "@/state/pulse";
+import { coverage, requiredFor, stateOf, tierExplanation } from "@/state/guardrails";
 import { formatDate, today } from "@/lib/format";
 import {
   CALLOUT_LABEL,
@@ -102,6 +103,7 @@ export default function ProjectPrint({ withImages }: { withImages: boolean }) {
         );
       })}
       <PrintScorecard />
+      <PrintGuardrails />
       <PrintPulse />
     </div>
   );
@@ -379,3 +381,40 @@ function PrintPulse() {
     </section>
   );
 }
+
+/** Guardrails in print: the tier and one row per guardrail. */
+function PrintGuardrails() {
+  const { project } = useProject();
+  const plan = project.guardrails;
+  const c = coverage(plan);
+  const required = new Set(c.tier ? requiredFor(c.tier) : []);
+  return (
+    <section className="mt-6 break-inside-avoid">
+      <h2 className="break-after-avoid border-b border-neutral-300 pb-1 font-display text-base font-medium">Guardrails</h2>
+      <p className="mt-1 text-[9pt] text-neutral-600">
+        {c.tier
+          ? `Risk tier ${c.tier}, ${lowerFirst(tierExplanation(plan))}. ${c.inPlace} of ${c.required} required in place.`
+          : `Risk tier not set (${c.answered} of 5 questions answered).`}
+      </p>
+      <div className="mt-1">
+        <PrintTable
+          rows={[
+            ["Phase", "Guardrail", "Required", "Status"],
+            ...GUARDRAILS.map((g) => {
+              const st = stateOf(plan, g.id);
+              return [
+                PHASES.find((p) => p.id === g.phase)?.name ?? g.phase,
+                g.title,
+                required.has(g.id) ? "Yes" : "",
+                st.status + (st.status === "Not needed" && st.reason ? `: ${st.reason}` : ""),
+              ];
+            }),
+          ]}
+        />
+      </div>
+    </section>
+  );
+}
+
+/** Lowercase only the first letter, so names inside the sentence keep their capitals. */
+const lowerFirst = (t: string) => t.charAt(0).toLowerCase() + t.slice(1);

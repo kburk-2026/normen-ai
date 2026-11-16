@@ -11,6 +11,7 @@ import {
   IconChevronRight,
   IconGauge,
   IconHeartbeat,
+  IconShieldCheck,
   IconLayoutKanban,
   IconLayoutList,
   IconListCheck,
@@ -26,6 +27,7 @@ import { PROJECT_STATUSES, type Section } from "@/content/demo";
 import { ProjectScope, useProject, useWorkspace } from "@/state/ProjectProvider";
 import { phaseState } from "@/state/project";
 import { ProjectToolsProvider } from "./ProjectTools";
+import ProjectGuardrails from "@/components/guardrails/ProjectGuardrails";
 import ProjectPulse from "@/components/pulse/ProjectPulse";
 import ProjectScorecard from "@/components/scorecard/ProjectScorecard";
 import SectionView from "./SectionView";
@@ -35,6 +37,7 @@ type Route =
   | { kind: "board" }
   | { kind: "scorecard" }
   | { kind: "pulse" }
+  | { kind: "guardrails" }
   | { kind: "section"; phase: PhaseId; sectionId: string }
   | { kind: "bad" };
 
@@ -43,6 +46,7 @@ function parseRoute(path: string[]): Route {
   if (path.length === 1 && path[0] === "board") return { kind: "board" };
   if (path.length === 1 && path[0] === "scorecard") return { kind: "scorecard" };
   if (path.length === 1 && path[0] === "pulse") return { kind: "pulse" };
+  if (path.length === 1 && path[0] === "guardrails") return { kind: "guardrails" };
   if (path.length === 2 && PHASES.some((p) => p.id === path[0])) {
     return { kind: "section", phase: path[0] as PhaseId, sectionId: path[1] };
   }
@@ -101,6 +105,7 @@ function Shell({ route }: { route: Route }) {
           {route.kind === "board" && <Workbench view="board" />}
           {route.kind === "scorecard" && <ProjectScorecard />}
           {route.kind === "pulse" && <ProjectPulse />}
+          {route.kind === "guardrails" && <ProjectGuardrails />}
           {route.kind === "section" &&
             (section ? <SectionView phase={route.phase} section={section} /> : <NotFound what="page" />)}
           {route.kind === "bad" && <NotFound what="page" />}
@@ -210,6 +215,15 @@ function Sidebar({ route }: { route: Route }) {
                 className={navLink(route.kind === "pulse")}
               >
                 <IconHeartbeat size={16} aria-hidden /> Pulse
+              </Link>
+            </li>
+            <li>
+              <Link
+                href={`${base}/guardrails`}
+                aria-current={route.kind === "guardrails" ? "page" : undefined}
+                className={navLink(route.kind === "guardrails")}
+              >
+                <IconShieldCheck size={16} aria-hidden /> Guardrails
               </Link>
             </li>
           </ul>

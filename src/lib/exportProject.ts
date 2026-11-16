@@ -1,10 +1,11 @@
 import { PHASES, type PhaseId } from "@/content/phases";
-import { ACTIVITIES, CHECKPOINTS } from "@/content/lifecycle";
+import { ACTIVITIES, CHECKPOINTS, GUARDRAILS } from "@/content/lifecycle";
 import type { ActivityStatus, FitResult, Project } from "@/content/demo";
 import { FIT_BANDS } from "@/content/fitCheck";
 import { logByDay } from "@/state/log";
 import { STATUS_ORDER, allMetrics, recordOf, statusCounts, statusOf } from "@/state/scorecard";
 import { accuracyFloor, pastAlert } from "@/state/pulse";
+import { coverage, requiredFor, stateOf, tierExplanation } from "@/state/guardrails";
 import {
   CALLOUT_LABEL,
   SWOT_KEYS,
@@ -66,6 +67,7 @@ export function projectToMarkdown(project: Project, exportedOn: string): string 
     }
   }
   out.push(...scorecardToMarkdown(project));
+  out.push(...guardrailsToMarkdown(project));
   out.push(...pulseToMarkdown(project));
   if (project.log.length) {
     out.push("", "## Changelog", "");
@@ -107,6 +109,30 @@ function scorecardToMarkdown(project: Project): string[] {
   }
   return out;
 }
+
+/** Guardrails: the risk tier, what set it, and every guardrail's status. */
+function guardrailsToMarkdown(project: Project): string[] {
+  const plan = project.guardrails;
+  const c = coverage(plan);
+  const required = new Set(c.tier ? requiredFor(c.tier) : []);
+  const out = ["", "## Guardrails", ""];
+  out.push(
+    c.tier
+      ? `Risk tier: ${c.tier}, ${lowerFirst(tierExplanation(plan))}. ${c.inPlace} of ${c.required} required guardrails in place.`
+      : `Risk tier not set (${c.answered} of 5 questions answered).`,
+    "",
+    ...table([
+      ["Phase", "Guardrail", "Required", "Status", "Why not needed"],
+      ...GUARDRAILS.map((g) => {
+        const st = stateOf(plan, g.id);
+        return [phaseLabelOf(g.phase), g.title, required.has(g.id) ? "Yes" : "", st.status, st.status === "Not needed" ? st.reason : ""];
+      }),
+    ]),
+  );
+  return out;
+}
+
+const phaseLabelOf = (id: PhaseId) => PHASES.find((p) => p.id === id)?.name ?? id;
 
 /** Pulse: the alert lines, every weekly check-in, and the incident log. Left out when nothing is logged. */
 function pulseToMarkdown(project: Project): string[] {
@@ -256,3 +282,6 @@ export function blocksToMarkdown(blocks: Block[]): string[] {
 export function slugify(name: string) {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "project";
 }
+
+/** Lowercase only the first letter, so names inside the sentence keep their capitals. */
+const lowerFirst = (t: string) => t.charAt(0).toLowerCase() + t.slice(1);
