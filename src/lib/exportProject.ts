@@ -4,6 +4,7 @@ import type { ActivityStatus, FitResult, Project } from "@/content/demo";
 import { FIT_BANDS } from "@/content/fitCheck";
 import { logByDay } from "@/state/log";
 import { STATUS_ORDER, allMetrics, recordOf, statusCounts, statusOf } from "@/state/scorecard";
+import { accuracyFloor, pastAlert } from "@/state/pulse";
 import {
   CALLOUT_LABEL,
   SWOT_KEYS,
@@ -65,6 +66,7 @@ export function projectToMarkdown(project: Project, exportedOn: string): string 
     }
   }
   out.push(...scorecardToMarkdown(project));
+  out.push(...pulseToMarkdown(project));
   if (project.log.length) {
     out.push("", "## Changelog", "");
     for (const d of logByDay(project.log)) for (const e of d.entries) out.push(`- ${formatDate(d.day)}: ${e.text}`);
@@ -102,6 +104,43 @@ function scorecardToMarkdown(project: Project): string[] {
       readings.sort((a, b) => a.r.date.localeCompare(b.r.date));
       out.push("", "Readings:", "", ...table([["Date", "Measure", "Value", "Verdict", "Note"], ...readings.map(({ m, r }) => [formatDate(r.date), m.metric, r.value, r.verdict, r.note])]));
     }
+  }
+  return out;
+}
+
+/** Pulse: the alert lines, every weekly check-in, and the incident log. Left out when nothing is logged. */
+function pulseToMarkdown(project: Project): string[] {
+  const { checkIns, incidents, alerts } = project.pulse;
+  if (!checkIns.length && !incidents.length) return [];
+  const out = ["", "## Pulse"];
+  const floor = accuracyFloor(alerts);
+  const lines = [
+    alerts.flaggedAbove !== null ? `flagged outputs above ${alerts.flaggedAbove}%` : null,
+    floor !== null ? `accuracy at or below ${floor}%` : null,
+  ].filter(Boolean);
+  if (lines.length) out.push("", `Alert lines: ${lines.join(", ")}.`);
+  if (checkIns.length) {
+    const n = (v: number | null, unit = "") => (v === null ? "" : `${v}${unit}`);
+    out.push(
+      "",
+      "### Check-ins",
+      "",
+      ...table([
+        ["Week of", "Uses", "Flagged", "Accuracy", "Past an alert line", "Note"],
+        ...checkIns.map((c) => [formatDate(c.week), n(c.uses), n(c.flagged, "%"), n(c.accuracy, "%"), pastAlert(c, alerts) ? "Yes" : "", c.note]),
+      ]),
+    );
+  }
+  if (incidents.length) {
+    out.push(
+      "",
+      "### Incidents",
+      "",
+      ...table([
+        ["#", "Date", "What happened", "Severity", "Status", "What was done", "Resolved"],
+        ...[...incidents].reverse().map((i) => [String(i.number), formatDate(i.date), i.what, i.severity, i.status, i.action, i.resolved ? formatDate(i.resolved) : ""]),
+      ]),
+    );
   }
   return out;
 }

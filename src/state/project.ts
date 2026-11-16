@@ -6,6 +6,7 @@ import { FIT_BANDS } from "@/content/fitCheck";
 import type { FitResult } from "@/content/demo";
 import { LOG_LIMIT, backfillLog } from "./log";
 import { normalizeScorecard } from "./scorecard";
+import { normalizePulse } from "./pulse";
 
 export type PhaseState = "passed" | "current" | "locked";
 
@@ -157,5 +158,6 @@ export function normalizeProject(saved: Partial<Project>): Project {
       saved.scorecard === undefined && isDemo && (saved.demoVersion ?? 0) < 5
         ? DEMO_PROJECT.scorecard
         : normalizeScorecard(saved.scorecard),
+    pulse: normalizePulse(saved.pulse),
   };
 }

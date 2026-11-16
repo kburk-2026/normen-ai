@@ -6,6 +6,7 @@ import { useProject } from "@/state/ProjectProvider";
 import { openCriteria, overrideFor } from "@/state/project";
 import { fitCheckLine, phaseLabel } from "@/lib/exportProject";
 import { STATUS_ORDER, allMetrics, recordOf, statusCounts, statusOf } from "@/state/scorecard";
+import { pastAlert } from "@/state/pulse";
 import { formatDate, today } from "@/lib/format";
 import {
   CALLOUT_LABEL,
@@ -101,6 +102,7 @@ export default function ProjectPrint({ withImages }: { withImages: boolean }) {
         );
       })}
       <PrintScorecard />
+      <PrintPulse />
     </div>
   );
 }
@@ -339,6 +341,41 @@ function PrintScorecard() {
           </div>
         );
       })}
+    </section>
+  );
+}
+
+/** Pulse in print: check-ins and incidents. Nothing is printed when nothing is logged. */
+function PrintPulse() {
+  const { project } = useProject();
+  const { checkIns, incidents, alerts } = project.pulse;
+  if (!checkIns.length && !incidents.length) return null;
+  const n = (v: number | null, unit = "") => (v === null ? "" : `${v}${unit}`);
+  return (
+    <section className="mt-6">
+      <h2 className="break-after-avoid border-b border-neutral-300 pb-1 font-display text-base font-medium">Pulse</h2>
+      {checkIns.length > 0 && (
+        <div className="mt-2 break-inside-avoid">
+          <h3 className="text-[9pt] font-medium uppercase tracking-wide text-neutral-500">Check-ins</h3>
+          <PrintTable
+            rows={[
+              ["Week of", "Uses", "Flagged", "Accuracy", "Past an alert line", "Note"],
+              ...checkIns.map((c) => [formatDate(c.week), n(c.uses), n(c.flagged, "%"), n(c.accuracy, "%"), pastAlert(c, alerts) ? "Yes" : "", c.note]),
+            ]}
+          />
+        </div>
+      )}
+      {incidents.length > 0 && (
+        <div className="mt-2 break-inside-avoid">
+          <h3 className="text-[9pt] font-medium uppercase tracking-wide text-neutral-500">Incidents</h3>
+          <PrintTable
+            rows={[
+              ["#", "Date", "What happened", "Severity", "Status", "What was done"],
+              ...[...incidents].reverse().map((i) => [String(i.number), formatDate(i.date), i.what, i.severity, i.status + (i.resolved ? ` ${formatDate(i.resolved)}` : ""), i.action]),
+            ]}
+          />
+        </div>
+      )}
     </section>
   );
 }

@@ -10,6 +10,7 @@ import {
   IconChevronDown,
   IconChevronRight,
   IconGauge,
+  IconHeartbeat,
   IconLayoutKanban,
   IconLayoutList,
   IconListCheck,
@@ -25,6 +26,7 @@ import { PROJECT_STATUSES, type Section } from "@/content/demo";
 import { ProjectScope, useProject, useWorkspace } from "@/state/ProjectProvider";
 import { phaseState } from "@/state/project";
 import { ProjectToolsProvider } from "./ProjectTools";
+import ProjectPulse from "@/components/pulse/ProjectPulse";
 import ProjectScorecard from "@/components/scorecard/ProjectScorecard";
 import SectionView from "./SectionView";
 
@@ -32,6 +34,7 @@ type Route =
   | { kind: "list" }
   | { kind: "board" }
   | { kind: "scorecard" }
+  | { kind: "pulse" }
   | { kind: "section"; phase: PhaseId; sectionId: string }
   | { kind: "bad" };
 
@@ -39,6 +42,7 @@ function parseRoute(path: string[]): Route {
   if (path.length === 0) return { kind: "list" };
   if (path.length === 1 && path[0] === "board") return { kind: "board" };
   if (path.length === 1 && path[0] === "scorecard") return { kind: "scorecard" };
+  if (path.length === 1 && path[0] === "pulse") return { kind: "pulse" };
   if (path.length === 2 && PHASES.some((p) => p.id === path[0])) {
     return { kind: "section", phase: path[0] as PhaseId, sectionId: path[1] };
   }
@@ -96,6 +100,7 @@ function Shell({ route }: { route: Route }) {
           {route.kind === "list" && <Workbench view="list" />}
           {route.kind === "board" && <Workbench view="board" />}
           {route.kind === "scorecard" && <ProjectScorecard />}
+          {route.kind === "pulse" && <ProjectPulse />}
           {route.kind === "section" &&
             (section ? <SectionView phase={route.phase} section={section} /> : <NotFound what="page" />)}
           {route.kind === "bad" && <NotFound what="page" />}
@@ -196,6 +201,15 @@ function Sidebar({ route }: { route: Route }) {
                 className={navLink(route.kind === "scorecard")}
               >
                 <IconGauge size={16} aria-hidden /> Scorecard
+              </Link>
+            </li>
+            <li>
+              <Link
+                href={`${base}/pulse`}
+                aria-current={route.kind === "pulse" ? "page" : undefined}
+                className={navLink(route.kind === "pulse")}
+              >
+                <IconHeartbeat size={16} aria-hidden /> Pulse
               </Link>
             </li>
           </ul>

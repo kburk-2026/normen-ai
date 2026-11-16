@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import type { Block, BlockType } from "@/content/blocks";
 import type { Reading } from "@/content/scorecard";
+import type { AlertLines, CheckIn, Incident } from "@/content/pulse";
 import { DEMO_ID, DEMO_PROJECT, type ActivityStatus, type FitResult, type Project, type ProjectStatus, type Section } from "@/content/demo";
 import { FIT_BANDS } from "@/content/fitCheck";
 import type { PhaseId } from "@/content/phases";
@@ -10,6 +11,7 @@ import { today } from "@/lib/format";
 import * as P from "./project";
 import * as W from "./workspace";
 import * as S from "./scorecard";
+import * as PL from "./pulse";
 import { addLog, logEdit, phaseName } from "./log";
 
 // ---------- Workspace: every project, saved to localStorage ----------
@@ -194,6 +196,14 @@ type ProjectValue = {
   /** Returns what Undo needs. */
   removeCustomMetric: (metricId: string) => S.RemovedMetric | null;
   restoreCustomMetric: (saved: S.RemovedMetric) => void;
+  saveCheckIn: (c: Omit<CheckIn, "id">) => void;
+  deleteCheckIn: (id: string) => CheckIn | undefined;
+  restoreCheckIn: (c: CheckIn) => void;
+  setAlerts: (alerts: AlertLines) => void;
+  reportIncident: (i: Omit<Incident, "id" | "number">) => void;
+  updateIncident: (id: string, patch: Partial<Omit<Incident, "id" | "number">>) => void;
+  deleteIncident: (id: string) => { incident: Incident; index: number } | undefined;
+  restoreIncident: (saved: { incident: Incident; index: number }) => void;
 };
 
 const ProjectContext = createContext<ProjectValue | null>(null);
@@ -275,6 +285,22 @@ export function ProjectScope({ project, children }: { project: Project; children
         return saved;
       },
       restoreCustomMetric: (saved) => update((p) => S.restoreCustomMetric(p, saved)),
+      saveCheckIn: (c) => update((p) => PL.saveCheckIn(p, { ...c, id: W.newId("ci") })),
+      deleteCheckIn: (id) => {
+        const [, gone] = PL.deleteCheckIn(project, id);
+        update((p) => PL.deleteCheckIn(p, id)[0]);
+        return gone;
+      },
+      restoreCheckIn: (c) => update((p) => PL.restoreCheckIn(p, c)),
+      setAlerts: (alerts) => update((p) => PL.setAlerts(p, alerts, today())),
+      reportIncident: (i) => update((p) => PL.reportIncident(p, { ...i, id: W.newId("inc") })),
+      updateIncident: (id, patch) => update((p) => PL.updateIncident(p, id, patch, today())),
+      deleteIncident: (id) => {
+        const [, saved] = PL.deleteIncident(project, id);
+        update((p) => PL.deleteIncident(p, id)[0]);
+        return saved;
+      },
+      restoreIncident: (saved) => update((p) => PL.restoreIncident(p, saved)),
     }),
     [project, update, resetDemo],
   );

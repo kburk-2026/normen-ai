@@ -2,6 +2,7 @@ import { DEMO_PROJECT, allDefaultSections, type Project, type Section } from "@/
 import type { PhaseId } from "@/content/phases";
 import { newBlock, type Block, type BlockType } from "@/content/blocks";
 import { emptyScorecard } from "@/content/scorecard";
+import { emptyPulse } from "@/content/pulse";
 import { normalizeProject } from "./project";
 
 /** Everything Normen stores in the browser. */
@@ -73,6 +74,7 @@ export function createProject(name: string, blurb: string, fromDemo: boolean): P
         sections: allDefaultSections(now),
         fitCheck: undefined,
         scorecard: emptyScorecard(),
+        pulse: emptyPulse(),
       };
   return {
     ...base,

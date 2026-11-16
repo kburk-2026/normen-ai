@@ -211,6 +211,20 @@ Milestones (a mockup before each, Karen approves before any push):
     hidden duplicate of the form; FitCheck now reads `?project=` from
     `window.location` instead of `useSearchParams`.
 14. Pulse (weekly drift, flagged outputs, usage trends; incident log).
+    **Done.** Karen approved the mockup 2026-11-15. Route
+    `/workbench/<id>/pulse` (sidebar link under Scorecard); `/pulse` lists
+    every project. Types in `src/content/pulse.ts`, rules in
+    `src/state/pulse.ts`, UI in `src/components/pulse/`. One check-in per
+    week (Monday start, `weekStart`); uses, flagged % and sample accuracy %
+    are each optional; picking a logged week loads its numbers and saving
+    updates it. Alert lines: flagged above X%, and accuracy at or below
+    baseline minus drop; the one place Normen compares numbers itself.
+    Incidents: date, what, severity Low/Medium/High, status
+    Open/Investigating/Resolved (resolving stamps the date, reopening clears
+    it), what was done. Deleting a check-in or incident has Undo; every change
+    writes the changelog. Charts: single series, dashed alert line, described
+    in words, arrow keys read each week, table holds every number. The demo
+    has not launched, so its Pulse is empty. Exports skip Pulse when empty.
 15. Guardrails page with risk tiering (tier decides required guardrails).
 16. ROI model (also as a calculator block).
 17. Timeline view in the Workbench (uses checkpoint pass dates).
@@ -240,4 +254,4 @@ the link with a real folder, run:
   automatically.
 - Commit as `343284727+kburk-2026@users.noreply.github.com` (set in this repo's
   git config); GitHub rejects pushes that expose the private email.
-- Phase 1 is complete. Phase 2 milestones 7 to 13 are done. Next: milestone 14 (Pulse).
+- Phase 1 is complete. Phase 2 milestones 7 to 14 are done. Next: milestone 15 (Guardrails page with risk tiering).

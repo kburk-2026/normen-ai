@@ -2,6 +2,7 @@ import type { PhaseId } from "./phases";
 import type { Block } from "./blocks";
 import type { FitBand } from "./fitCheck";
 import type { Scorecard } from "./scorecard";
+import { emptyPulse, type Pulse } from "./pulse";
 
 export type { Block };
 
@@ -81,6 +82,8 @@ export type Project = {
   fitCheck?: FitResult;
   /** Targets and readings for the project's measures. */
   scorecard: Scorecard;
+  /** Weekly check-ins, incidents and alert lines, once the system is in use. */
+  pulse: Pulse;
 };
 
 /** Noon UTC, so the seed shows as 4 Nov in every time zone from UTC-11 to UTC+11. */
@@ -164,6 +167,8 @@ export const DEMO_PROJECT: Project = {
   sections: demoSections(),
   fitCheck: { score: 78, band: "good", capped: false, at: "2026-10-06" },
   scorecard: demoScorecard(),
+  // The demo has not launched, so its Pulse starts empty.
+  pulse: emptyPulse(),
   log: [
     { at: "2026-10-21T12:00:00.000Z", text: "Plan checkpoint passed with an override" },
     { at: "2026-10-07T12:00:00.000Z", text: "Conceive checkpoint passed" },

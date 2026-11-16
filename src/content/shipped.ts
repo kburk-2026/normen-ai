@@ -15,6 +15,13 @@ export const SHIPPED: ShippedEntry[] = [
   {
     date: "2026-11-15",
     kind: "Milestone",
+    label: "Milestone 14",
+    title: "Pulse",
+    body: "Once a project is in use, log a check-in each week: uses, flagged outputs and accuracy on a reviewed sample. Set two alert lines and Pulse marks the weeks that cross them. An incident log tracks every report from first notice to fix.",
+  },
+  {
+    date: "2026-11-15",
+    kind: "Milestone",
     label: "Milestone 13",
     title: "Scorecard",
     body: "Each project has a Scorecard: the Field Guide's measures plus your own, with your targets, a log of readings, and your call on each one. Open it from the project sidebar; the Scorecard page lists every project's totals.",
