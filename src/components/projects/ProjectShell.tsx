@@ -9,6 +9,7 @@ import {
   IconArrowUp,
   IconChevronDown,
   IconChevronRight,
+  IconGauge,
   IconLayoutKanban,
   IconLayoutList,
   IconListCheck,
@@ -24,14 +25,20 @@ import { PROJECT_STATUSES, type Section } from "@/content/demo";
 import { ProjectScope, useProject, useWorkspace } from "@/state/ProjectProvider";
 import { phaseState } from "@/state/project";
 import { ProjectToolsProvider } from "./ProjectTools";
+import ProjectScorecard from "@/components/scorecard/ProjectScorecard";
 import SectionView from "./SectionView";
 
 type Route =
-  { kind: "list" } | { kind: "board" } | { kind: "section"; phase: PhaseId; sectionId: string } | { kind: "bad" };
+  | { kind: "list" }
+  | { kind: "board" }
+  | { kind: "scorecard" }
+  | { kind: "section"; phase: PhaseId; sectionId: string }
+  | { kind: "bad" };
 
 function parseRoute(path: string[]): Route {
   if (path.length === 0) return { kind: "list" };
   if (path.length === 1 && path[0] === "board") return { kind: "board" };
+  if (path.length === 1 && path[0] === "scorecard") return { kind: "scorecard" };
   if (path.length === 2 && PHASES.some((p) => p.id === path[0])) {
     return { kind: "section", phase: path[0] as PhaseId, sectionId: path[1] };
   }
@@ -88,6 +95,7 @@ function Shell({ route }: { route: Route }) {
         <div className="min-w-0 pt-6 md:pt-0">
           {route.kind === "list" && <Workbench view="list" />}
           {route.kind === "board" && <Workbench view="board" />}
+          {route.kind === "scorecard" && <ProjectScorecard />}
           {route.kind === "section" &&
             (section ? <SectionView phase={route.phase} section={section} /> : <NotFound what="page" />)}
           {route.kind === "bad" && <NotFound what="page" />}
@@ -179,6 +187,15 @@ function Sidebar({ route }: { route: Route }) {
                 className={navLink(route.kind === "board")}
               >
                 <IconLayoutKanban size={16} aria-hidden /> Board
+              </Link>
+            </li>
+            <li>
+              <Link
+                href={`${base}/scorecard`}
+                aria-current={route.kind === "scorecard" ? "page" : undefined}
+                className={navLink(route.kind === "scorecard")}
+              >
+                <IconGauge size={16} aria-hidden /> Scorecard
               </Link>
             </li>
           </ul>

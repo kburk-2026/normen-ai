@@ -194,6 +194,22 @@ Milestones (a mockup before each, Karen approves before any push):
     evidence. It never ticks or blocks the criterion. Demo version 4 seeds a
     Fit Check result.
 13. Scorecard dashboard (own targets, logged readings, status per metric).
+    **Done.** Karen approved the mockup 2026-11-15. Route
+    `/workbench/<id>/scorecard` (sidebar link under Board); `/scorecard` lists
+    every project's totals. Types in `src/content/scorecard.ts`, rules in
+    `src/state/scorecard.ts`, UI in `src/components/scorecard/`. Measures are
+    the 11 from `SCORECARD` plus the project's own (removable, with Undo).
+    Targets are free text with the Field Guide example as a hint. A reading
+    is date, value, verdict (On target, Close, Off target) and note; the user
+    sets the verdict. Status = latest reading's verdict, else Not measured.
+    Readings are kept in date order; deleting one has Undo. Each change
+    writes the changelog (target edits once per measure per day). Record
+    only: no effect on checkpoints. Demo version 5 seeds readings for S-101,
+    S-201, S-301, S-302 (example figures). Included in backups, Markdown and
+    print.
+    Also fixed: the Fit Check page's Suspense wrapper (milestone 12) left a
+    hidden duplicate of the form; FitCheck now reads `?project=` from
+    `window.location` instead of `useSearchParams`.
 14. Pulse (weekly drift, flagged outputs, usage trends; incident log).
 15. Guardrails page with risk tiering (tier decides required guardrails).
 16. ROI model (also as a calculator block).
@@ -224,4 +240,4 @@ the link with a real folder, run:
   automatically.
 - Commit as `343284727+kburk-2026@users.noreply.github.com` (set in this repo's
   git config); GitHub rejects pushes that expose the private email.
-- Phase 1 is complete. Phase 2 milestones 7 to 12 are done. Next: milestone 13 (Scorecard dashboard).
+- Phase 1 is complete. Phase 2 milestones 7 to 13 are done. Next: milestone 14 (Pulse).

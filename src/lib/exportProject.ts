@@ -3,6 +3,7 @@ import { ACTIVITIES, CHECKPOINTS } from "@/content/lifecycle";
 import type { ActivityStatus, FitResult, Project } from "@/content/demo";
 import { FIT_BANDS } from "@/content/fitCheck";
 import { logByDay } from "@/state/log";
+import { STATUS_ORDER, allMetrics, recordOf, statusCounts, statusOf } from "@/state/scorecard";
 import {
   CALLOUT_LABEL,
   SWOT_KEYS,
@@ -63,6 +64,7 @@ export function projectToMarkdown(project: Project, exportedOn: string): string 
       out.push("", `### ${section.title}`, "", ...checklistToMarkdown(project, phase.id));
     }
   }
+  out.push(...scorecardToMarkdown(project));
   if (project.log.length) {
     out.push("", "## Changelog", "");
     for (const d of logByDay(project.log)) for (const e of d.entries) out.push(`- ${formatDate(d.day)}: ${e.text}`);
@@ -73,6 +75,35 @@ export function projectToMarkdown(project: Project, exportedOn: string): string 
 /** The saved Fit Check result in one sentence, shared by the Markdown and print exports. */
 export function fitCheckLine(f: FitResult) {
   return `Fit Check: ${f.score} out of 100 (${FIT_BANDS[f.band].title}), saved ${formatDate(f.at)}.`;
+}
+
+/** The Scorecard: each phase's measures with target, latest reading and status, then every reading. */
+function scorecardToMarkdown(project: Project): string[] {
+  const card = project.scorecard;
+  const metrics = allMetrics(card);
+  const counts = statusCounts(card);
+  const out = ["", "## Scorecard", "", STATUS_ORDER.map((s) => `${counts[s]} ${s.toLowerCase()}`).join(", ") + "."];
+  for (const phase of PHASES) {
+    const rows = metrics.filter((m) => m.phase === phase.id);
+    if (!rows.length) continue;
+    out.push("", `### 0${phase.number} ${phase.name}`, "");
+    out.push(
+      ...table([
+        ["Measure", "Target", "Latest", "Status"],
+        ...rows.map((m) => {
+          const rec = recordOf(card, m.id);
+          const last = rec.readings.at(-1);
+          return [m.metric, rec.target, last ? `${last.value} (${formatDate(last.date)})` : "", statusOf(card, m.id)];
+        }),
+      ]),
+    );
+    const readings = rows.flatMap((m) => recordOf(card, m.id).readings.map((r) => ({ m, r })));
+    if (readings.length) {
+      readings.sort((a, b) => a.r.date.localeCompare(b.r.date));
+      out.push("", "Readings:", "", ...table([["Date", "Measure", "Value", "Verdict", "Note"], ...readings.map(({ m, r }) => [formatDate(r.date), m.metric, r.value, r.verdict, r.note])]));
+    }
+  }
+  return out;
 }
 
 /** A phase's Checklist: activities, checkpoint criteria and any override. */

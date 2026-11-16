@@ -5,6 +5,7 @@ import { normalizeBlocks } from "@/content/blocks";
 import { FIT_BANDS } from "@/content/fitCheck";
 import type { FitResult } from "@/content/demo";
 import { LOG_LIMIT, backfillLog } from "./log";
+import { normalizeScorecard } from "./scorecard";
 
 export type PhaseState = "passed" | "current" | "locked";
 
@@ -151,5 +152,10 @@ export function normalizeProject(saved: Partial<Project>): Project {
     sections,
     log: normalizeLog(saved, base),
     ...fitCheckOf(saved, isDemo),
+    // A demo from before version 5 has no Scorecard yet: give it the seeded one.
+    scorecard:
+      saved.scorecard === undefined && isDemo && (saved.demoVersion ?? 0) < 5
+        ? DEMO_PROJECT.scorecard
+        : normalizeScorecard(saved.scorecard),
   };
 }

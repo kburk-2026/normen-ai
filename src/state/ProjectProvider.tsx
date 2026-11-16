@@ -2,12 +2,14 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import type { Block, BlockType } from "@/content/blocks";
+import type { Reading } from "@/content/scorecard";
 import { DEMO_ID, DEMO_PROJECT, type ActivityStatus, type FitResult, type Project, type ProjectStatus, type Section } from "@/content/demo";
 import { FIT_BANDS } from "@/content/fitCheck";
 import type { PhaseId } from "@/content/phases";
 import { today } from "@/lib/format";
 import * as P from "./project";
 import * as W from "./workspace";
+import * as S from "./scorecard";
 import { addLog, logEdit, phaseName } from "./log";
 
 // ---------- Workspace: every project, saved to localStorage ----------
@@ -183,6 +185,15 @@ type ProjectValue = {
   updateBlock: (phase: PhaseId, sectionId: string, blockId: string, fn: (b: Block) => Block) => void;
   moveBlock: (phase: PhaseId, sectionId: string, blockId: string, to: number) => void;
   deleteBlock: (phase: PhaseId, sectionId: string, blockId: string) => void;
+  setTarget: (metricId: string, target: string) => void;
+  addReading: (metricId: string, reading: Omit<Reading, "id">) => void;
+  /** Returns the removed reading, for Undo. */
+  deleteReading: (metricId: string, readingId: string) => Reading | undefined;
+  restoreReading: (metricId: string, reading: Reading) => void;
+  addCustomMetric: (phase: PhaseId, metric: string, measure: string) => void;
+  /** Returns what Undo needs. */
+  removeCustomMetric: (metricId: string) => S.RemovedMetric | null;
+  restoreCustomMetric: (saved: S.RemovedMetric) => void;
 };
 
 const ProjectContext = createContext<ProjectValue | null>(null);
@@ -248,6 +259,22 @@ export function ProjectScope({ project, children }: { project: Project; children
         update((p) => edited(p, W.moveBlock(p, phase, sectionId, blockId, to), phase, sectionId)),
       deleteBlock: (phase, sectionId, blockId) =>
         update((p) => edited(p, W.deleteBlock(p, phase, sectionId, blockId), phase, sectionId)),
+      setTarget: (metricId, target) => update((p) => S.setTarget(p, metricId, target, today())),
+      addReading: (metricId, reading) => update((p) => S.addReading(p, metricId, { ...reading, id: W.newId("rd") })),
+      deleteReading: (metricId, readingId) => {
+        const gone = S.recordOf(project.scorecard, metricId).readings.find((r) => r.id === readingId);
+        update((p) => S.deleteReading(p, metricId, readingId));
+        return gone;
+      },
+      restoreReading: (metricId, reading) => update((p) => S.restoreReading(p, metricId, reading)),
+      addCustomMetric: (phase, metric, measure) =>
+        update((p) => S.addCustomMetric(p, { id: W.newId("m"), phase, metric: metric.trim(), measure: measure.trim() })),
+      removeCustomMetric: (metricId) => {
+        const [, saved] = S.removeCustomMetric(project, metricId);
+        update((p) => S.removeCustomMetric(p, metricId)[0]);
+        return saved;
+      },
+      restoreCustomMetric: (saved) => update((p) => S.restoreCustomMetric(p, saved)),
     }),
     [project, update, resetDemo],
   );

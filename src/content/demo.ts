@@ -1,6 +1,7 @@
 import type { PhaseId } from "./phases";
 import type { Block } from "./blocks";
 import type { FitBand } from "./fitCheck";
+import type { Scorecard } from "./scorecard";
 
 export type { Block };
 
@@ -78,6 +79,8 @@ export type Project = {
   log: LogEntry[];
   /** The latest saved Fit Check result, shown as evidence on the Conceive checkpoint. */
   fitCheck?: FitResult;
+  /** Targets and readings for the project's measures. */
+  scorecard: Scorecard;
 };
 
 /** Noon UTC, so the seed shows as 4 Nov in every time zone from UTC-11 to UTC+11. */
@@ -105,7 +108,7 @@ export const DEMO_ID = "demo";
  * A saved demo from an earlier version gets the new pages when it loads;
  * its edits stay, and a page deleted after that stays deleted.
  */
-export const DEMO_VERSION = 4;
+export const DEMO_VERSION = 5;
 export const DEMO_ADDED_PAGES: { phase: PhaseId; sectionId: string; since: number }[] = [
   { phase: "plan", sectionId: "plan-governance", since: 1 },
   { phase: "develop", sectionId: "develop-model-data", since: 2 },
@@ -160,6 +163,7 @@ export const DEMO_PROJECT: Project = {
   ],
   sections: demoSections(),
   fitCheck: { score: 78, band: "good", capped: false, at: "2026-10-06" },
+  scorecard: demoScorecard(),
   log: [
     { at: "2026-10-21T12:00:00.000Z", text: "Plan checkpoint passed with an override" },
     { at: "2026-10-07T12:00:00.000Z", text: "Conceive checkpoint passed" },
@@ -349,4 +353,28 @@ function prototypeBlocks(): Block[] {
       ],
     },
   ];
+}
+
+/** The demo's Scorecard: the measures for the phases it has reached. Example figures, not real results. */
+function demoScorecard(): Scorecard {
+  const r = (id: string, date: string, value: string, verdict: "On target" | "Close" | "Off target", note = "") => ({ id, date, value, verdict, note });
+  return {
+    custom: [],
+    metrics: {
+      "S-101": { target: "Measured before any build", readings: [r("r1", "2026-10-05", "310 review hours a month", "On target", "Baseline from finance timesheets")] },
+      "S-201": { target: "Signed off by the sponsor", readings: [r("r1", "2026-10-21", "Signed off", "On target")] },
+      "S-301": {
+        target: "Catches 80% or more of flagged claims",
+        readings: [
+          r("r1", "2026-10-28", "61%", "Off target", "Rules baseline"),
+          r("r2", "2026-11-04", "79%", "Close", "First boosted model"),
+          r("r3", "2026-11-11", "84%", "On target", "After cleaning duplicate claims"),
+        ],
+      },
+      "S-302": {
+        target: "Under 5 points",
+        readings: [r("r1", "2026-11-04", "9 points", "Off target"), r("r2", "2026-11-11", "7 points", "Off target", "Travel team still flagged more often")],
+      },
+    },
+  };
 }

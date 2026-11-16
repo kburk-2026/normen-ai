@@ -15,6 +15,20 @@ export const SHIPPED: ShippedEntry[] = [
   {
     date: "2026-11-15",
     kind: "Milestone",
+    label: "Milestone 13",
+    title: "Scorecard",
+    body: "Each project has a Scorecard: the Field Guide's measures plus your own, with your targets, a log of readings, and your call on each one. Open it from the project sidebar; the Scorecard page lists every project's totals.",
+  },
+  {
+    date: "2026-11-15",
+    kind: "Fix",
+    label: "Fix",
+    title: "Fit Check form appeared twice",
+    body: "Since milestone 12 the Fit Check page held a hidden second copy of its questions, which made the browser report an error with each answer. It now has one.",
+  },
+  {
+    date: "2026-11-15",
+    kind: "Milestone",
     label: "Milestone 12",
     title: "Tools, changelog and a Fit Check that remembers",
     body: "Every project page has a Tools menu: status, export, backup and restore in one place. Each project keeps a changelog that writes itself. The Fit Check can save its score to a project, where it shows as evidence on the Conceive checkpoint. Press ? for keyboard shortcuts.",

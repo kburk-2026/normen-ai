@@ -5,6 +5,7 @@ import { ACTIVITIES, CHECKPOINTS } from "@/content/lifecycle";
 import { useProject } from "@/state/ProjectProvider";
 import { openCriteria, overrideFor } from "@/state/project";
 import { fitCheckLine, phaseLabel } from "@/lib/exportProject";
+import { STATUS_ORDER, allMetrics, recordOf, statusCounts, statusOf } from "@/state/scorecard";
 import { formatDate, today } from "@/lib/format";
 import {
   CALLOUT_LABEL,
@@ -99,6 +100,7 @@ export default function ProjectPrint({ withImages }: { withImages: boolean }) {
           </section>
         );
       })}
+      <PrintScorecard />
     </div>
   );
 }
@@ -292,5 +294,51 @@ function PrintTable({ rows }: { rows: string[][] }) {
         ))}
       </tbody>
     </table>
+  );
+}
+
+/** The Scorecard in print: one table per phase, with every reading under it. */
+function PrintScorecard() {
+  const { project } = useProject();
+  const card = project.scorecard;
+  const metrics = allMetrics(card);
+  const counts = statusCounts(card);
+  return (
+    <section className="mt-6">
+      <h2 className="break-after-avoid border-b border-neutral-300 pb-1 font-display text-base font-medium">Scorecard</h2>
+      <p className="mt-1 text-[9pt] text-neutral-600">{STATUS_ORDER.map((s) => `${counts[s]} ${s.toLowerCase()}`).join(" · ")}</p>
+      {PHASES.map((phase) => {
+        const rows = metrics.filter((m) => m.phase === phase.id);
+        const readings = rows
+          .flatMap((m) => recordOf(card, m.id).readings.map((r) => ({ m, r })))
+          .sort((a, b) => a.r.date.localeCompare(b.r.date));
+        return (
+          <div key={phase.id} className="mt-2 break-inside-avoid">
+            <h3 className="text-[9pt] font-medium uppercase tracking-wide text-neutral-500">
+              0{phase.number} {phase.name}
+            </h3>
+            <PrintTable
+              rows={[
+                ["Measure", "Target", "Latest", "Status"],
+                ...rows.map((m) => {
+                  const rec = recordOf(card, m.id);
+                  const last = rec.readings.at(-1);
+                  return [m.metric, rec.target, last ? `${last.value} (${formatDate(last.date)})` : "", statusOf(card, m.id)];
+                }),
+              ]}
+            />
+            {readings.length > 0 && (
+              <ul className="mt-1 text-[9pt] text-neutral-700">
+                {readings.map(({ m, r }) => (
+                  <li key={`${m.id}-${r.id}`}>
+                    {formatDate(r.date)} · {m.metric}: {r.value} ({r.verdict}){r.note && ` · ${r.note}`}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        );
+      })}
+    </section>
   );
 }

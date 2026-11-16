@@ -2,7 +2,6 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { IconAlertTriangle, IconArrowRight, IconCircleCheck, IconRefresh, IconTarget } from "@tabler/icons-react";
 import Mascot from "@/components/Mascot";
 import { FIT_BANDS, FIT_QUESTIONS, scoreFit, type FitBand } from "@/content/fitCheck";
@@ -183,7 +182,10 @@ function Result({ answers, onStartOver }: { answers: Record<string, number>; onS
  */
 function SaveResult({ score, band, capped }: { score: number; band: FitBand; capped: boolean }) {
   const { loaded, projects, saveFitCheck } = useWorkspace();
-  const asked = useSearchParams()?.get("project") ?? "";
+  // Read ?project= straight from the address. This component only ever renders in the browser
+  // (after the last answer), and useSearchParams would force a Suspense boundary around the whole
+  // page, which left a hidden second copy of the form in the document.
+  const [asked] = useState(() => (typeof window === "undefined" ? "" : (new URLSearchParams(window.location.search).get("project") ?? "")));
   const preset = projects.find((p) => p.id === asked);
   const [chosen, setChosen] = useState("");
   const [savedTo, setSavedTo] = useState<{ id: string; name: string }>();
