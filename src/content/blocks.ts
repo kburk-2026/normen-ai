@@ -5,6 +5,8 @@
  */
 
 import { isWebUrl, videoSource } from "@/lib/media";
+import { isReady, normalizeRoi } from "@/lib/roi";
+import { emptyRoi, type RoiModel } from "./roi";
 
 export const CALLOUT_TONES = ["note", "warning", "decision"] as const;
 export type CalloutTone = (typeof CALLOUT_TONES)[number];
@@ -120,7 +122,11 @@ export type VideoBlock = { id: string; type: "video"; url: string; title: string
 export type LinkRow = { id: string; title: string; url: string; note: string };
 export type LinksBlock = { id: string; type: "links"; rows: LinkRow[] };
 
+// ---- ROI calculator block (milestone 16): a scenario of its own, separate from the project's ROI page. ----
+export type RoiBlock = { id: string; type: "roi"; title: string; model: RoiModel };
+
 export type Block =
+  | RoiBlock
   | ImageBlock
   | VideoBlock
   | LinksBlock
@@ -170,6 +176,8 @@ export function newBlock(type: BlockType, id: string): Block {
       return { id, type, url: "", title: "" };
     case "links":
       return { id, type, rows: [newLink()] };
+    case "roi":
+      return { id, type, title: "ROI estimate", model: emptyRoi() };
   }
 }
 
@@ -337,6 +345,9 @@ export function normalizeBlocks(raw: unknown): Block[] {
         });
         break;
       }
+      case "roi":
+        out.push({ id, type: "roi", title: str(b.title) || "ROI estimate", model: normalizeRoi(b.model) });
+        break;
       case "image":
         out.push({ id, type: "image", url: str(b.url), alt: str(b.alt), caption: str(b.caption) });
         break;
@@ -379,6 +390,7 @@ export function isEmptyBlock(b: Block) {
   if (b.type === "timeline") return filledMilestones(b).length === 0;
   if (b.type === "swot") return SWOT_KEYS.every((k) => filledItems(b[k]).length === 0);
   // A media block with no usable address shows nothing to a reader.
+  if (b.type === "roi") return !isReady(b.model.inputs);
   if (b.type === "image") return !isWebUrl(b.url);
   if (b.type === "video") return !videoSource(b.url);
   if (b.type === "links") return filledLinks(b).length === 0;

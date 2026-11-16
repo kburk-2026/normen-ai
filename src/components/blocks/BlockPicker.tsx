@@ -2,6 +2,7 @@
 
 import { forwardRef, useEffect, useId, useRef, useState } from "react";
 import {
+  IconCalculator,
   IconCheck,
   IconFileDescription,
   IconInfoCircle,
@@ -56,6 +57,10 @@ const GROUPS: { name: string; items: Pick[] }[] = [
       { type: "video", label: "Video", hint: "YouTube, Vimeo, Loom or a video file", icon: IconVideo },
       { type: "links", label: "Files and links", hint: "A list of documents and pages", icon: IconLink },
     ],
+  },
+  {
+    name: "Numbers",
+    items: [{ type: "roi", label: "ROI calculator", hint: "What it saves against what it costs", icon: IconCalculator }],
   },
 ];
 

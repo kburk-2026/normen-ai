@@ -5,6 +5,7 @@ import type { Block, BlockType } from "@/content/blocks";
 import type { Reading } from "@/content/scorecard";
 import type { AlertLines, CheckIn, Incident } from "@/content/pulse";
 import type { GuardrailStatus } from "@/content/riskTier";
+import type { RoiModel } from "@/content/roi";
 import { DEMO_ID, DEMO_PROJECT, type ActivityStatus, type FitResult, type Project, type ProjectStatus, type Section } from "@/content/demo";
 import { FIT_BANDS } from "@/content/fitCheck";
 import type { PhaseId } from "@/content/phases";
@@ -209,6 +210,8 @@ type ProjectValue = {
   setTierAnswer: (questionId: string, answer: number) => void;
   setGuardrailStatus: (id: string, status: GuardrailStatus) => void;
   setGuardrailReason: (id: string, reason: string) => void;
+  /** Replace the project's ROI model. Edits write one changelog line a day. */
+  setRoi: (roi: RoiModel) => void;
 };
 
 const ProjectContext = createContext<ProjectValue | null>(null);
@@ -309,6 +312,7 @@ export function ProjectScope({ project, children }: { project: Project; children
       setTierAnswer: (questionId, answer) => update((p) => G.setAnswer(p, questionId, answer, today())),
       setGuardrailStatus: (id, status) => update((p) => G.setGuardrailStatus(p, id, status)),
       setGuardrailReason: (id, reason) => update((p) => G.setGuardrailReason(p, id, reason, today())),
+      setRoi: (roi) => update((p) => addLog({ ...p, roi }, "ROI model edited", `roi:${today()}`)),
     }),
     [project, update, resetDemo],
   );

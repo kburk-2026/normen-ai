@@ -25,6 +25,7 @@ const NAME: Record<Block["type"], string> = {
   image: "Image",
   video: "Video",
   links: "Files and links",
+  roi: "ROI calculator",
 };
 const UNDO_MS = 8000;
 

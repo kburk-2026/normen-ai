@@ -239,6 +239,18 @@ Milestones (a mockup before each, Karen approves before any push):
     Demo version 6 seeds answers (High: sensitive data) and statuses, with
     the privacy review In progress to match the open Plan criterion.
 16. ROI model (also as a calculator block).
+    **Done.** Karen approved the mockup 2026-11-15. Route `/workbench/<id>/roi`
+    (sidebar link under Guardrails); no top-level page. Types in
+    `src/content/roi.ts`, arithmetic in `src/lib/roi.ts`, UI in
+    `src/components/roi/` (shared `RoiInputsForm`, `RoiResults`, `RoiChart`).
+    Inputs are numbers or null; no result until tasks, minutes, hourly cost
+    and share are in. Cautious case halves share and minutes. Payback says
+    "Never, at these numbers" when net is zero or less. Currency $, € or £
+    is display only. The "ROI calculator" block (new "Numbers" picker group)
+    holds its own scenario and never changes the page. Edits write one
+    changelog line a day. Demo version 7 seeds example figures (2,400 claims,
+    3 minutes). The chart keeps a 600px minimum and scrolls inside its card
+    on phones.
 17. Timeline view in the Workbench (uses checkpoint pass dates).
 18. Curriculum Program Designer case study (needs Karen's material).
 
@@ -266,4 +278,4 @@ the link with a real folder, run:
   automatically.
 - Commit as `343284727+kburk-2026@users.noreply.github.com` (set in this repo's
   git config); GitHub rejects pushes that expose the private email.
-- Phase 1 is complete. Phase 2 milestones 7 to 15 are done. Next: milestone 16 (ROI model).
+- Phase 1 is complete. Phase 2 milestones 7 to 16 are done. Next: milestone 17 (Timeline view).

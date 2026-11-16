@@ -27,6 +27,8 @@ import {
 import { openCriteria, overrideFor, phaseState } from "@/state/project";
 import { formatDate } from "./format";
 import { hostOf } from "./media";
+import { cautiousInputs, hoursText, isReady, money, paybackText, roiResult, workingLines } from "./roi";
+import type { RoiModel } from "@/content/roi";
 
 const BOX: Record<ActivityStatus, string> = { done: "[x]", doing: "[~]", todo: "[ ]" };
 
@@ -68,6 +70,7 @@ export function projectToMarkdown(project: Project, exportedOn: string): string 
   }
   out.push(...scorecardToMarkdown(project));
   out.push(...guardrailsToMarkdown(project));
+  out.push(...roiToMarkdown("## ROI", project.roi));
   out.push(...pulseToMarkdown(project));
   if (project.log.length) {
     out.push("", "## Changelog", "");
@@ -108,6 +111,45 @@ function scorecardToMarkdown(project: Project): string[] {
     }
   }
   return out;
+}
+
+/** An ROI model: inputs, expected and cautious results, and the working. Left out until the main numbers are in. */
+function roiToMarkdown(heading: string, model: RoiModel): string[] {
+  const { inputs, currency } = model;
+  if (!isReady(inputs)) return [];
+  const e = roiResult(inputs);
+  const c = roiResult(cautiousInputs(inputs));
+  const m = (v: number) => money(v, currency);
+  const v = (x: number | null, unit = "") => (x === null ? "" : unit === "money" ? m(x) : `${x.toLocaleString("en-US")}${unit}`);
+  return [
+    "",
+    heading,
+    "",
+    ...table([
+      ["Input", "Value"],
+      ["Tasks per month", v(inputs.tasks)],
+      ["Minutes saved per task", v(inputs.minutes)],
+      ["Cost of an hour of that work", v(inputs.hourly, "money")],
+      ["Share of tasks it handles", v(inputs.adoption, "%")],
+      ["Other yearly benefit", v(inputs.other, "money")],
+      ["To build, once", v(inputs.build, "money")],
+      ["To run, per year", v(inputs.running, "money")],
+      ["People to look after it, per year", v(inputs.people, "money")],
+    ]),
+    "",
+    ...table([
+      ["Result", "Expected", "Cautious (half the share, half the minutes)"],
+      ["Hours saved a year", hoursText(e.hours), hoursText(c.hours)],
+      ["Saved a year", m(e.benefit), m(c.benefit)],
+      ["Net a year", m(e.net), m(c.net)],
+      ["Pays back the build in", paybackText(e.payback), paybackText(c.payback)],
+      ["After three years", m(e.threeYear), m(c.threeYear)],
+    ]),
+    "",
+    "Working (expected case):",
+    "",
+    ...workingLines(inputs, currency).map((l) => `- ${l}`),
+  ];
 }
 
 /** Guardrails: the risk tier, what set it, and every guardrail's status. */
@@ -235,6 +277,8 @@ export function blocksToMarkdown(blocks: Block[]): string[] {
     } else if (b.type === "timeline") {
       out.push("**Timeline**", "");
       for (const m of filledMilestones(b)) out.push(`- ${m.done ? "[x]" : "[ ]"} ${dateOr(m.date, "No date")}: ${m.text.trim()}`);
+    } else if (b.type === "roi") {
+      out.push(...roiToMarkdown(`**${mdText(b.title) || "ROI estimate"}**`, b.model));
     } else if (b.type === "image") {
       out.push(`![${b.alt.trim().replace(/[\[\]\n]/g, " ")}](${b.url.trim()})`);
       if (b.caption.trim()) out.push("", `*${b.caption.trim().replace(/\n+/g, " ")}*`);

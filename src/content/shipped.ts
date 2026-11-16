@@ -15,6 +15,13 @@ export const SHIPPED: ShippedEntry[] = [
   {
     date: "2026-11-15",
     kind: "Milestone",
+    label: "Milestone 16",
+    title: "ROI model",
+    body: "Each project has an ROI page: enter what the system saves and what it costs, and see yearly net, payback and the three-year result, with a cautious case beside the expected one and every sum shown. The same calculator is a block for any section.",
+  },
+  {
+    date: "2026-11-15",
+    kind: "Milestone",
     label: "Milestone 15",
     title: "Guardrails and risk tiers",
     body: "Five questions set each project's risk tier: Low, Medium or High. The tier decides which of the 14 guardrails are required, and each guardrail gets a status. Each phase's Checklist shows the same, and the Field Guide explains the rules.",

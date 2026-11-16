@@ -4,6 +4,7 @@ import type { FitBand } from "./fitCheck";
 import type { Scorecard } from "./scorecard";
 import { emptyPulse, type Pulse } from "./pulse";
 import type { GuardrailPlan } from "./riskTier";
+import type { RoiModel } from "./roi";
 
 export type { Block };
 
@@ -87,6 +88,8 @@ export type Project = {
   pulse: Pulse;
   /** Risk tier answers and the status of each guardrail. */
   guardrails: GuardrailPlan;
+  /** The project's main ROI model. */
+  roi: RoiModel;
 };
 
 /** Noon UTC, so the seed shows as 4 Nov in every time zone from UTC-11 to UTC+11. */
@@ -114,7 +117,7 @@ export const DEMO_ID = "demo";
  * A saved demo from an earlier version gets the new pages when it loads;
  * its edits stay, and a page deleted after that stays deleted.
  */
-export const DEMO_VERSION = 6;
+export const DEMO_VERSION = 7;
 export const DEMO_ADDED_PAGES: { phase: PhaseId; sectionId: string; since: number }[] = [
   { phase: "plan", sectionId: "plan-governance", since: 1 },
   { phase: "develop", sectionId: "develop-model-data", since: 2 },
@@ -174,6 +177,11 @@ export const DEMO_PROJECT: Project = {
   pulse: emptyPulse(),
   // Claim notes hold health details, so the demo is High tier. The privacy review is still in
   // progress, matching the Plan checkpoint's open privacy criterion.
+  // Example figures that follow the demo's story: about 2,400 claims a month, 3 minutes saved on each.
+  roi: {
+    currency: "USD",
+    inputs: { tasks: 2400, minutes: 3, hourly: 45, adoption: 80, other: null, build: 60000, running: 8000, people: 15000 },
+  },
   guardrails: {
     answers: { people: 1, data: 2, audience: 1, harm: 1, review: 0 },
     statuses: {

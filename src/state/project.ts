@@ -8,6 +8,7 @@ import { LOG_LIMIT, backfillLog } from "./log";
 import { normalizeScorecard } from "./scorecard";
 import { normalizePulse } from "./pulse";
 import { normalizeGuardrailPlan } from "./guardrails";
+import { normalizeRoi } from "@/lib/roi";
 
 export type PhaseState = "passed" | "current" | "locked";
 
@@ -165,5 +166,7 @@ export function normalizeProject(saved: Partial<Project>): Project {
       saved.guardrails === undefined && isDemo && (saved.demoVersion ?? 0) < 6
         ? DEMO_PROJECT.guardrails
         : normalizeGuardrailPlan(saved.guardrails),
+    // A demo from before version 7 has no ROI model yet: give it the seeded one.
+    roi: saved.roi === undefined && isDemo && (saved.demoVersion ?? 0) < 7 ? DEMO_PROJECT.roi : normalizeRoi(saved.roi),
   };
 }

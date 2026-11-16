@@ -8,6 +8,8 @@ import { fitCheckLine, phaseLabel } from "@/lib/exportProject";
 import { STATUS_ORDER, allMetrics, recordOf, statusCounts, statusOf } from "@/state/scorecard";
 import { pastAlert } from "@/state/pulse";
 import { coverage, requiredFor, stateOf, tierExplanation } from "@/state/guardrails";
+import { cautiousInputs, isReady, money, paybackText, roiResult, workingLines } from "@/lib/roi";
+import type { RoiModel } from "@/content/roi";
 import { formatDate, today } from "@/lib/format";
 import {
   CALLOUT_LABEL,
@@ -104,6 +106,7 @@ export default function ProjectPrint({ withImages }: { withImages: boolean }) {
       })}
       <PrintScorecard />
       <PrintGuardrails />
+      <PrintRoi title="ROI" model={project.roi} />
       <PrintPulse />
     </div>
   );
@@ -156,6 +159,7 @@ function PrintBlocks({ blocks, withImages }: { blocks: Block[]; withImages: bool
               </ul>
             </PrintTitled>
           );
+        if (b.type === "roi") return <PrintRoi key={b.id} title={b.title || "ROI estimate"} model={b.model} small />;
         if (b.type === "image")
           return (
             <figure key={b.id} className="break-inside-avoid">
@@ -418,3 +422,34 @@ function PrintGuardrails() {
 
 /** Lowercase only the first letter, so names inside the sentence keep their capitals. */
 const lowerFirst = (t: string) => t.charAt(0).toLowerCase() + t.slice(1);
+
+/** An ROI model in print: inputs and both cases in one table, then the working. */
+function PrintRoi({ title, model, small }: { title: string; model: RoiModel; small?: boolean }) {
+  const { inputs, currency } = model;
+  if (!isReady(inputs)) return null;
+  const e = roiResult(inputs);
+  const c = roiResult(cautiousInputs(inputs));
+  const m = (v: number) => money(v, currency);
+  const Heading = small ? "p" : "h2";
+  return (
+    <section className={`${small ? "" : "mt-6"} break-inside-avoid`}>
+      <Heading className={small ? "font-medium" : "break-after-avoid border-b border-neutral-300 pb-1 font-display text-base font-medium"}>{title}</Heading>
+      <div className="mt-1">
+        <PrintTable
+          rows={[
+            ["", "Expected", "Cautious"],
+            ["Saved a year", m(e.benefit), m(c.benefit)],
+            ["Net a year", m(e.net), m(c.net)],
+            ["Pays back the build in", paybackText(e.payback), paybackText(c.payback)],
+            ["After three years", m(e.threeYear), m(c.threeYear)],
+          ]}
+        />
+      </div>
+      <ul className="mt-1 text-[9pt] text-neutral-700">
+        {workingLines(inputs, currency).map((l) => (
+          <li key={l}>{l}</li>
+        ))}
+      </ul>
+    </section>
+  );
+}

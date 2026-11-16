@@ -14,6 +14,7 @@ Normen AI maps the seven product management lifecycle phases (Conceive, Plan, De
 - **Scorecard:** each project's measures, targets and logged readings, with your own call on each reading.
 - **Pulse:** weekly check-ins once a project is in use, trend charts against your own alert lines, and an incident log.
 - **Guardrails:** five questions set each project's risk tier, and the tier decides which guardrails it must have.
+- **ROI:** what a project saves against what it costs, with payback and a cautious case. Also a calculator block.
 - **Fit Check:** ten weighted questions that tell you whether a problem needs AI at all. Save the score to a project and it shows as evidence on the Conceive checkpoint.
 - **Field Guide:** the whole method, with every item labeled as course material or Claude's addition.
 - **Shipped:** what changed in the app, and when.
@@ -29,7 +30,7 @@ Normen AI maps the seven product management lifecycle phases (Conceive, Plan, De
 | 5 | Field Guide, Shipped, export | Done |
 | 6 | Accessibility pass, architecture notes | Done |
 
-Phase 2 turns Normen into a project tracker, modeled on a product development playbook: projects with phase tabs and sections (milestone 7, done), a block editor for writing in each section (milestone 8, done), governance blocks (milestone 9, done), AI blocks (milestone 10, done), media blocks (milestone 11, done), a Tools menu, changelog and saved Fit Check results (milestone 12, done), the Scorecard (milestone 13, done), Pulse (milestone 14, done), and Guardrails with risk tiering (milestone 15, done), then an ROI model and a timeline view. Phase 3 adds sign-in, saved projects in the cloud, and sharing.
+Phase 2 turns Normen into a project tracker, modeled on a product development playbook: projects with phase tabs and sections (milestone 7, done), a block editor for writing in each section (milestone 8, done), governance blocks (milestone 9, done), AI blocks (milestone 10, done), media blocks (milestone 11, done), a Tools menu, changelog and saved Fit Check results (milestone 12, done), the Scorecard (milestone 13, done), Pulse (milestone 14, done), and Guardrails with risk tiering (milestone 15, done), an ROI model (milestone 16, done), then a timeline view. Phase 3 adds sign-in, saved projects in the cloud, and sharing.
 
 ## Stack
 
@@ -59,7 +60,7 @@ src/
     guardrails.ts       Risk tier from the five answers, required guardrails per tier, statuses
     ProjectProvider.tsx WorkspaceProvider (every project, saved to localStorage)
                         and ProjectScope (binds the Workbench to one project)
-  lib/          Helpers: Markdown export, date formatting
+  lib/          Helpers: Markdown export, date formatting, media address rules, ROI arithmetic
   components/   UI, grouped by feature (projects/, blocks/, workbench/, fitcheck/, ui/)
   app/          One folder per page (App Router)
 ```
@@ -79,6 +80,8 @@ src/
 **Charts that can be read without seeing them.** Pulse charts show one measure each (never two axes), with a dashed alert line. Every chart is described in words, can be read week by week with the arrow keys, and sits above a table holding every number. Weeks past an alert line carry a warning icon and words, never color alone.
 
 **Risk tiers take the worst answer, not an average.** Each of the five tier questions points to Low, Medium or High, and the project takes the highest, so one serious answer (sensitive data, decisions about people made on their own) is enough for High. Each tier requires its own guardrails plus every lower tier's. The rules are Claude's design and the Field Guide says so.
+
+**ROI arithmetic in the open.** The ROI model (`src/lib/roi.ts`) is plain arithmetic on the user's own numbers, shown line by line under "Show the working" and in the exports. A cautious case (half the share of tasks, half the minutes saved) always sits beside the expected one.
 
 **Evidence, not gates.** A saved Fit Check score appears under the Conceive criterion it supports, but never ticks or blocks it. The same holds for the governance and AI blocks: they record what people decided.
 

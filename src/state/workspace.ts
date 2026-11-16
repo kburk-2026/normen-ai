@@ -4,6 +4,7 @@ import { newBlock, type Block, type BlockType } from "@/content/blocks";
 import { emptyScorecard } from "@/content/scorecard";
 import { emptyPulse } from "@/content/pulse";
 import { emptyGuardrailPlan } from "@/content/riskTier";
+import { emptyRoi } from "@/content/roi";
 import { normalizeProject } from "./project";
 
 /** Everything Normen stores in the browser. */
@@ -77,6 +78,7 @@ export function createProject(name: string, blurb: string, fromDemo: boolean): P
         scorecard: emptyScorecard(),
         pulse: emptyPulse(),
         guardrails: emptyGuardrailPlan(),
+        roi: emptyRoi(),
       };
   return {
     ...base,

@@ -4,6 +4,7 @@ import { IconAlertTriangle, IconCircleCheck, IconInfoCircle, IconMinus, IconPlus
 import AutoTextarea from "@/components/ui/AutoTextarea";
 import { DataSources, ModelCard, RiskRegister } from "./AiBlocks";
 import { ImageView, LinksView, VideoView } from "./MediaBlocks";
+import RoiBlockView from "./RoiBlockView";
 import { ApprovalTracker, DecisionLog, Swot, Timeline } from "./GovernanceBlocks";
 import { CALLOUT_LABEL, CALLOUT_TONES, type Block, type CalloutTone, type TableBlock } from "@/content/blocks";
 import type { Mode } from "@/state/editMode";
@@ -87,6 +88,7 @@ export default function BlockContent({
   if (b.type === "approval") return <ApprovalTracker block={b} edit={edit} onChange={onChange} />;
   if (b.type === "timeline") return <Timeline block={b} edit={edit} onChange={onChange} />;
   if (b.type === "swot") return <Swot block={b} edit={edit} onChange={onChange} />;
+  if (b.type === "roi") return <RoiBlockView block={b} edit={edit} onChange={onChange} />;
   if (b.type === "image") return <ImageView block={b} edit={edit} onChange={onChange} />;
   if (b.type === "video") return <VideoView block={b} edit={edit} onChange={onChange} />;
   if (b.type === "links") return <LinksView block={b} edit={edit} onChange={onChange} />;
