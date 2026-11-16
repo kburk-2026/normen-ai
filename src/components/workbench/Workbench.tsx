@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { IconDownload, IconLayoutKanban, IconLayoutList, IconPrinter, IconRefresh, IconTimeline } from "@tabler/icons-react";
 import { ACTIVITIES } from "@/content/lifecycle";
+import { projectKind } from "@/content/demo";
 import type { PhaseId } from "@/content/phases";
 import { ToolsMenu, useProjectTools } from "@/components/projects/ProjectTools";
 import { useProject } from "@/state/ProjectProvider";
@@ -26,7 +27,7 @@ export default function Workbench({ view }: { view: View }) {
       <div className="print:hidden">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="font-mono text-xs text-faint">{project.isDemo ? "Demo project" : "Project"}</p>
+            <p className="font-mono text-xs text-faint">{projectKind(project)}</p>
             <h1 className="mt-1 font-display text-3xl font-medium tracking-tight">{project.name}</h1>
             <p className="mt-2 max-w-xl text-muted">{project.blurb}</p>
           </div>
@@ -37,7 +38,7 @@ export default function Workbench({ view }: { view: View }) {
             <ExportButton onClick={tools.print} label="Print the project or save it as a PDF">
               <IconPrinter size={16} aria-hidden /> PDF
             </ExportButton>
-            {project.isDemo && (
+            {(project.isDemo || project.caseStudy) && (
               <button
                 type="button"
                 onClick={() => {
@@ -46,7 +47,7 @@ export default function Workbench({ view }: { view: View }) {
                 }}
                 className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm text-muted transition-colors hover:bg-surface hover:text-ink"
               >
-                <IconRefresh size={16} aria-hidden /> Reset demo
+                <IconRefresh size={16} aria-hidden /> {project.isDemo ? "Reset demo" : "Reset case study"}
               </button>
             )}
             <div className="inline-flex rounded-full bg-surface p-1 text-sm" role="group" aria-label="View">

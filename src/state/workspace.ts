@@ -1,3 +1,4 @@
+import { CASE_STUDY_ID, CASE_STUDY_PROJECT } from "@/content/caseStudy";
 import { DEMO_PROJECT, allDefaultSections, type Project, type Section } from "@/content/demo";
 import type { PhaseId } from "@/content/phases";
 import { newBlock, type Block, type BlockType } from "@/content/blocks";
@@ -7,14 +8,25 @@ import { emptyGuardrailPlan } from "@/content/riskTier";
 import { emptyRoi } from "@/content/roi";
 import { normalizeProject } from "./project";
 
-/** Everything Normen stores in the browser. */
-export type Workspace = { version: 2; projects: Project[] };
+/**
+ * Everything Normen stores in the browser. `seeded` lists the sample projects
+ * already added to this workspace, so one the user deletes is not added again.
+ */
+export type Workspace = { version: 2; projects: Project[]; seeded?: string[] };
 
 export const WORKSPACE_KEY = "normen:workspace:v2";
 /** The single-project save from phase 1. Read once to migrate; never written or deleted. */
 export const LEGACY_KEY = "normen:project:v1";
 
-export const DEFAULT_WORKSPACE: Workspace = { version: 2, projects: [DEMO_PROJECT] };
+export const DEFAULT_WORKSPACE: Workspace = { version: 2, projects: [DEMO_PROJECT, CASE_STUDY_PROJECT], seeded: [CASE_STUDY_ID] };
+
+/** Add the Career Studio case study once to a workspace saved before it existed. */
+export function withCaseStudy(ws: Workspace): Workspace {
+  const seeded = ws.seeded ?? [];
+  if (seeded.includes(CASE_STUDY_ID)) return ws;
+  const has = ws.projects.some((p) => p.id === CASE_STUDY_ID);
+  return { ...ws, projects: has ? ws.projects : [...ws.projects, CASE_STUDY_PROJECT], seeded: [...seeded, CASE_STUDY_ID] };
+}
 
 export function newId(prefix: string) {
   const rand =
@@ -31,12 +43,12 @@ export function newId(prefix: string) {
 export function loadWorkspace(v2: string | null, v1: string | null): Workspace {
   if (v2) {
     const parsed = parseWorkspace(v2);
-    if (parsed) return parsed;
+    if (parsed) return withCaseStudy(parsed);
   }
   if (v1) {
     try {
       const legacy = normalizeProject(JSON.parse(v1) as Partial<Project>);
-      return { version: 2, projects: [{ ...legacy, id: DEMO_PROJECT.id, isDemo: true }] };
+      return withCaseStudy({ version: 2, projects: [{ ...legacy, id: DEMO_PROJECT.id, isDemo: true }] });
     } catch {
       // Unreadable legacy save: fall through to the seed.
     }
@@ -56,7 +68,8 @@ export function parseWorkspace(text: string): Workspace | null {
       if (seen.has(p.id)) p.id = newId("p");
       seen.add(p.id);
     }
-    return { version: 2, projects };
+    const seeded = Array.isArray(data.seeded) ? data.seeded.filter((x): x is string => typeof x === "string") : undefined;
+    return { version: 2, projects, ...(seeded ? { seeded } : {}) };
   } catch {
     return null;
   }
@@ -88,6 +101,7 @@ export function createProject(name: string, blurb: string, fromDemo: boolean): P
     blurb: blurb.trim(),
     status: fromDemo ? base.status : "Draft",
     isDemo: false,
+    caseStudy: undefined,
     createdAt: now,
     updatedAt: now,
     demoVersion: undefined,
@@ -102,6 +116,7 @@ export function duplicateProject(project: Project): Project {
     id: newId("p"),
     name: `Copy of ${project.name}`,
     isDemo: false,
+    caseStudy: undefined,
     createdAt: now,
     updatedAt: now,
     demoVersion: undefined,

@@ -144,7 +144,7 @@ export default function ProjectsHub() {
               <button type="button" onClick={() => setCreating(true)} className="text-orange hover:text-orange-soft">
                 New project
               </button>
-              <button type="button" onClick={ws.resetDemo} className="text-orange hover:text-orange-soft">
+              <button type="button" onClick={() => ws.resetDemo()} className="text-orange hover:text-orange-soft">
                 Restore the demo
               </button>
             </div>
@@ -240,9 +240,9 @@ function ProjectCard({
         <Link href={`/workbench/${p.id}`} className="hover:text-orange-soft focus-visible:text-orange-soft">
           {p.name}
         </Link>
-        {p.isDemo && (
+        {(p.isDemo || p.caseStudy) && (
           <span className="ml-2 rounded-full bg-canvas px-2 py-0.5 align-middle font-sans text-[11px] font-normal text-muted">
-            Demo
+            {p.isDemo ? "Demo" : "Case study"}
           </span>
         )}
       </h2>

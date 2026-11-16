@@ -62,6 +62,8 @@ export type Project = {
   status: ProjectStatus;
   /** True only for the seeded Expense triage demo. */
   isDemo?: boolean;
+  /** True only for the seeded Career Studio case study: a real project, anonymized. */
+  caseStudy?: boolean;
   /** Demo only: the DEMO_VERSION this save was last brought up to. */
   demoVersion?: number;
   /** ISO timestamps. */
@@ -100,6 +102,11 @@ export const SEED_TIME = "2026-11-04T12:00:00.000Z";
 export const OLD_SEED_TIME = "2026-11-04T00:00:00.000Z";
 /** The demo's creation time before milestone 8, at midnight UTC: 30 September in the Americas. */
 export const OLD_DEMO_CREATED = "2026-10-01T00:00:00.000Z";
+
+/** The label above a project's name. */
+export function projectKind(p: Pick<Project, "isDemo" | "caseStudy">) {
+  return p.isDemo ? "Demo project" : p.caseStudy ? "Case study" : "Project";
+}
 
 /** The two sections every phase starts with. IDs are stable per phase. */
 export function defaultSections(phase: PhaseId, at = SEED_TIME): Section[] {

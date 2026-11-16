@@ -24,7 +24,7 @@ import Mascot from "@/components/Mascot";
 import Dialog, { primaryButton, quietButton } from "@/components/ui/Dialog";
 import Workbench from "@/components/workbench/Workbench";
 import { PHASES, type PhaseId } from "@/content/phases";
-import { PROJECT_STATUSES, type Section } from "@/content/demo";
+import { PROJECT_STATUSES, projectKind, type Section } from "@/content/demo";
 import { ProjectScope, useProject, useWorkspace } from "@/state/ProjectProvider";
 import { phaseState } from "@/state/project";
 import { ProjectToolsProvider } from "./ProjectTools";
@@ -171,7 +171,7 @@ function Sidebar({ route }: { route: Route }) {
           <IconArrowLeft size={16} aria-hidden /> All projects
         </Link>
         <p className="mt-4 font-mono text-[11px] uppercase tracking-wide text-faint">
-          {project.isDemo ? "Demo project" : "Project"}
+          {projectKind(project)}
         </p>
         <p className="font-display text-lg font-medium leading-tight">{project.name}</p>
         <label className="mt-2 block">

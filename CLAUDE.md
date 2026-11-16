@@ -265,7 +265,22 @@ Milestones (a mockup before each, Karen approves before any push):
     without a recorded date show as "date not recorded". Demo version 8
     seeds targets. Chart scrolls inside its card on narrow screens; the
     tables hold every date.
-18. Curriculum Program Designer case study (needs Karen's material).
+18. Case study. Karen replaced the Curriculum Program Designer (not an AI
+    project) with **Career Studio**, her public career-studio repository.
+    **Done.** Karen approved the mockup 2026-11-16, including the ratings
+    Claude proposed. Seed in `src/content/caseStudy.ts`
+    (`CASE_STUDY_PROJECT`, id `career-studio`, `caseStudy: true`, labeled
+    "Case study"). Every fact comes from career-studio's README,
+    `docs/CASE_STUDY.md`, `docs/PLAN.md` and commit dates (read only);
+    anonymized: no employer names, figures or contact details. It sits in
+    Launch: Develop and Qualify passed 28 Oct 2026 with overrides (bias
+    testing does not apply; no separate pilot, rollback test not recorded);
+    Conceive and Plan have no recorded pass date. No Fit Check and no ROI
+    figures, by design. Five resolved Pulse incidents from "What went
+    wrong". `Workspace.seeded` lists sample projects already added:
+    `withCaseStudy` adds it once to older saves, so a deleted case study
+    stays deleted. Reset case study restores it. Do not add facts that are
+    not in those sources.
 
 ## Adding a demo page
 
@@ -291,4 +306,4 @@ the link with a real folder, run:
   automatically.
 - Commit as `343284727+kburk-2026@users.noreply.github.com` (set in this repo's
   git config); GitHub rejects pushes that expose the private email.
-- Phase 1 is complete. Phase 2 milestones 7 to 17 are done. Next: milestone 18 (Curriculum Program Designer case study; needs Karen's material).
+- Phase 1 is complete. Phase 2 (milestones 7 to 18) is complete. Next: Phase 3.

@@ -13,6 +13,13 @@ export type ShippedEntry = {
 
 export const SHIPPED: ShippedEntry[] = [
   {
+    date: "2026-11-16",
+    kind: "Milestone",
+    label: "Milestone 18",
+    title: "Career Studio case study",
+    body: "A second demo project beside Expense triage: Career Studio, a real AI job-search workspace, written up in Normen from its public case study and anonymized. It shows a project in Launch, with its decisions, risks, model card, test results, guardrails and the five incidents that changed how it works.",
+  },
+  {
     date: "2026-11-15",
     kind: "Milestone",
     label: "Milestone 17",

@@ -141,6 +141,7 @@ export function normalizeProject(saved: Partial<Project>): Project {
       : (base?.status ?? "Draft"),
     isDemo,
     ...(isDemo ? { demoVersion: DEMO_VERSION } : {}),
+    ...(saved.caseStudy === true ? { caseStudy: true } : {}),
     // Older demo saves were created at midnight UTC, which reads as the day before in the Americas.
     createdAt:
       isDemo && saved.createdAt === OLD_DEMO_CREATED

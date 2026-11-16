@@ -6,6 +6,7 @@ import type { Reading } from "@/content/scorecard";
 import type { AlertLines, CheckIn, Incident } from "@/content/pulse";
 import type { GuardrailStatus } from "@/content/riskTier";
 import type { RoiModel } from "@/content/roi";
+import { CASE_STUDY_ID, CASE_STUDY_PROJECT } from "@/content/caseStudy";
 import { DEMO_ID, DEMO_PROJECT, type ActivityStatus, type FitResult, type Project, type ProjectStatus, type Section } from "@/content/demo";
 import { FIT_BANDS } from "@/content/fitCheck";
 import type { PhaseId } from "@/content/phases";
@@ -41,8 +42,8 @@ type WorkspaceValue = {
   saveFitCheck: (id: string, result: FitResult) => void;
   /** Replace every project, from a backup file. */
   replaceWorkspace: (ws: W.Workspace) => void;
-  /** Put the demo project back to its seeded state (adding it back if it was deleted). */
-  resetDemo: () => void;
+  /** Put a sample project (the demo by default, or the case study) back to its seeded state, adding it back if it was deleted. */
+  resetDemo: (id?: string) => void;
   workspace: W.Workspace;
 };
 
@@ -152,12 +153,12 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
           addLog({ ...p, fitCheck: result }, `Fit Check saved: ${result.score} out of 100 (${FIT_BANDS[result.band].title})`),
         ),
       replaceWorkspace: (next) => setWs(next),
-      resetDemo: () =>
+      resetDemo: (id = DEMO_ID) => {
+        const seed = id === CASE_STUDY_ID ? CASE_STUDY_PROJECT : DEMO_PROJECT;
         setProjects((list) =>
-          list.some((p) => p.id === DEMO_ID)
-            ? list.map((p) => (p.id === DEMO_ID ? DEMO_PROJECT : p))
-            : [DEMO_PROJECT, ...list],
-        ),
+          list.some((p) => p.id === seed.id) ? list.map((p) => (p.id === seed.id ? seed : p)) : [seed, ...list],
+        );
+      },
     }),
     [loaded, saveState, ws, updateProject, setProjects],
   );
@@ -244,7 +245,7 @@ export function ProjectScope({ project, children }: { project: Project; children
           logged(p, P.passWithOverride(p, phase, reason, today()), `${phaseName(phase)} checkpoint passed with an override`),
         ),
       reset: () => {
-        if (project.isDemo) resetDemo();
+        if (project.isDemo || project.caseStudy) resetDemo(project.id);
       },
       addSection: (phase) => {
         const [, section] = W.addSection(project, phase);

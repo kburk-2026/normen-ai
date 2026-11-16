@@ -30,7 +30,7 @@ Normen AI maps the seven product management lifecycle phases (Conceive, Plan, De
 | 5 | Field Guide, Shipped, export | Done |
 | 6 | Accessibility pass, architecture notes | Done |
 
-Phase 2 turns Normen into a project tracker, modeled on a product development playbook: projects with phase tabs and sections (milestone 7, done), a block editor for writing in each section (milestone 8, done), governance blocks (milestone 9, done), AI blocks (milestone 10, done), media blocks (milestone 11, done), a Tools menu, changelog and saved Fit Check results (milestone 12, done), the Scorecard (milestone 13, done), Pulse (milestone 14, done), and Guardrails with risk tiering (milestone 15, done), an ROI model (milestone 16, done), and a timeline view (milestone 17, done). The Curriculum Program Designer case study comes next. Phase 3 adds sign-in, saved projects in the cloud, and sharing.
+Phase 2 turns Normen into a project tracker, modeled on a product development playbook: projects with phase tabs and sections (milestone 7, done), a block editor for writing in each section (milestone 8, done), governance blocks (milestone 9, done), AI blocks (milestone 10, done), media blocks (milestone 11, done), a Tools menu, changelog and saved Fit Check results (milestone 12, done), the Scorecard (milestone 13, done), Pulse (milestone 14, done), and Guardrails with risk tiering (milestone 15, done), an ROI model (milestone 16, done), a timeline view (milestone 17, done), and a second demo project: Career Studio, a real AI project written up as a case study (milestone 18, done). Phase 3 adds sign-in, saved projects in the cloud, and sharing.
 
 ## Stack
 
