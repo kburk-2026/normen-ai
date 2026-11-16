@@ -252,6 +252,19 @@ Milestones (a mockup before each, Karen approves before any push):
     3 minutes). The chart keeps a 600px minimum and scrolls inside its card
     on phones.
 17. Timeline view in the Workbench (uses checkpoint pass dates).
+    **Done.** Karen approved the mockup 2026-11-15. Route
+    `/workbench/<id>/timeline`, a third view beside List and Board (sidebar
+    keeps "All phases" current). Rules in `src/state/timeline.ts`, UI in
+    `src/components/workbench/TimelineView.tsx`. A phase starts the day the
+    previous phase passed (Conceive: project creation) and ends at its pass
+    date; the current phase runs to today. New field `project.targets`
+    (phases not yet passed); planned bars start at the previous pass or
+    target. Overrides show as an orange diamond. The milestones lane and
+    table collect dated items from Timeline, Decision Log and Approval
+    Tracker blocks; only undone Timeline milestones can be overdue. Passes
+    without a recorded date show as "date not recorded". Demo version 8
+    seeds targets. Chart scrolls inside its card on narrow screens; the
+    tables hold every date.
 18. Curriculum Program Designer case study (needs Karen's material).
 
 ## Adding a demo page
@@ -278,4 +291,4 @@ the link with a real folder, run:
   automatically.
 - Commit as `343284727+kburk-2026@users.noreply.github.com` (set in this repo's
   git config); GitHub rejects pushes that expose the private email.
-- Phase 1 is complete. Phase 2 milestones 7 to 16 are done. Next: milestone 17 (Timeline view).
+- Phase 1 is complete. Phase 2 milestones 7 to 17 are done. Next: milestone 18 (Curriculum Program Designer case study; needs Karen's material).

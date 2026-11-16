@@ -9,6 +9,7 @@ import { STATUS_ORDER, allMetrics, recordOf, statusCounts, statusOf } from "@/st
 import { pastAlert } from "@/state/pulse";
 import { coverage, requiredFor, stateOf, tierExplanation } from "@/state/guardrails";
 import { cautiousInputs, isReady, money, paybackText, roiResult, workingLines } from "@/lib/roi";
+import { daysBetween, phaseSpans, timelineEvents } from "@/state/timeline";
 import type { RoiModel } from "@/content/roi";
 import { formatDate, today } from "@/lib/format";
 import {
@@ -105,6 +106,7 @@ export default function ProjectPrint({ withImages }: { withImages: boolean }) {
         );
       })}
       <PrintScorecard />
+      <PrintTimeline />
       <PrintGuardrails />
       <PrintRoi title="ROI" model={project.roi} />
       <PrintPulse />
@@ -450,6 +452,47 @@ function PrintRoi({ title, model, small }: { title: string; model: RoiModel; sma
           <li key={l}>{l}</li>
         ))}
       </ul>
+    </section>
+  );
+}
+
+/** The timeline in print: phase dates and dated milestones, as tables. */
+function PrintTimeline() {
+  const { project } = useProject();
+  const now = today();
+  const spans = phaseSpans(project, now);
+  const events = timelineEvents(project, now);
+  const name = (id: string) => PHASES.find((p) => p.id === id)?.name ?? id;
+  return (
+    <section className="mt-6 break-inside-avoid">
+      <h2 className="break-after-avoid border-b border-neutral-300 pb-1 font-display text-base font-medium">Timeline</h2>
+      <div className="mt-1">
+        <PrintTable
+          rows={[
+            ["Phase", "Started", "Passed, or target", "Days"],
+            ...spans.map((s) => [
+              name(s.phase),
+              s.start ? formatDate(s.start) : "",
+              s.state === "passed"
+                ? `${s.end ? `Passed ${formatDate(s.end)}` : "Passed"}${s.override ? " (override)" : ""}`
+                : s.target
+                  ? `Target ${formatDate(s.target)}`
+                  : "",
+              s.start && s.end ? `${daysBetween(s.start, s.end)}${s.state === "current" ? " so far" : ""}` : "",
+            ]),
+          ]}
+        />
+      </div>
+      {events.length > 0 && (
+        <ul className="mt-1 text-[9pt] text-neutral-700">
+          {events.map((e, i) => (
+            <li key={i}>
+              {formatDate(e.date)} · {e.text} ({e.from}
+              {e.overdue ? ", overdue" : ""})
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
   );
 }

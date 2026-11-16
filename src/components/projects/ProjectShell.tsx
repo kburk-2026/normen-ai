@@ -37,6 +37,7 @@ import SectionView from "./SectionView";
 type Route =
   | { kind: "list" }
   | { kind: "board" }
+  | { kind: "timeline" }
   | { kind: "scorecard" }
   | { kind: "pulse" }
   | { kind: "guardrails" }
@@ -47,6 +48,7 @@ type Route =
 function parseRoute(path: string[]): Route {
   if (path.length === 0) return { kind: "list" };
   if (path.length === 1 && path[0] === "board") return { kind: "board" };
+  if (path.length === 1 && path[0] === "timeline") return { kind: "timeline" };
   if (path.length === 1 && path[0] === "scorecard") return { kind: "scorecard" };
   if (path.length === 1 && path[0] === "pulse") return { kind: "pulse" };
   if (path.length === 1 && path[0] === "guardrails") return { kind: "guardrails" };
@@ -107,6 +109,7 @@ function Shell({ route }: { route: Route }) {
         <div className="min-w-0 pt-6 md:pt-0">
           {route.kind === "list" && <Workbench view="list" />}
           {route.kind === "board" && <Workbench view="board" />}
+          {route.kind === "timeline" && <Workbench view="timeline" />}
           {route.kind === "scorecard" && <ProjectScorecard />}
           {route.kind === "pulse" && <ProjectPulse />}
           {route.kind === "guardrails" && <ProjectGuardrails />}
@@ -189,8 +192,8 @@ function Sidebar({ route }: { route: Route }) {
             <li>
               <Link
                 href={base}
-                aria-current={route.kind === "list" ? "page" : undefined}
-                className={navLink(route.kind === "list")}
+                aria-current={route.kind === "list" || route.kind === "timeline" ? "page" : undefined}
+                className={navLink(route.kind === "list" || route.kind === "timeline")}
               >
                 <IconLayoutList size={16} aria-hidden /> All phases
               </Link>

@@ -90,6 +90,8 @@ export type Project = {
   guardrails: GuardrailPlan;
   /** The project's main ROI model. */
   roi: RoiModel;
+  /** Target end dates for phases not yet passed, YYYY-MM-DD. */
+  targets: Partial<Record<PhaseId, string>>;
 };
 
 /** Noon UTC, so the seed shows as 4 Nov in every time zone from UTC-11 to UTC+11. */
@@ -117,7 +119,7 @@ export const DEMO_ID = "demo";
  * A saved demo from an earlier version gets the new pages when it loads;
  * its edits stay, and a page deleted after that stays deleted.
  */
-export const DEMO_VERSION = 7;
+export const DEMO_VERSION = 8;
 export const DEMO_ADDED_PAGES: { phase: PhaseId; sectionId: string; since: number }[] = [
   { phase: "plan", sectionId: "plan-governance", since: 1 },
   { phase: "develop", sectionId: "develop-model-data", since: 2 },
@@ -177,6 +179,7 @@ export const DEMO_PROJECT: Project = {
   pulse: emptyPulse(),
   // Claim notes hold health details, so the demo is High tier. The privacy review is still in
   // progress, matching the Plan checkpoint's open privacy criterion.
+  targets: { develop: "2026-12-04", qualify: "2027-01-15", launch: "2027-02-15" },
   // Example figures that follow the demo's story: about 2,400 claims a month, 3 minutes saved on each.
   roi: {
     currency: "USD",

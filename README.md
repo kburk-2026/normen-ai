@@ -10,7 +10,7 @@ Live at **https://normen-ai.vercel.app**.
 
 Normen AI maps the seven product management lifecycle phases (Conceive, Plan, Develop, Qualify, Launch, Deliver, Retire) to the four AI product development stages (Ideation, Data, R&D, Deployment). Each phase carries its own activities, guardrails, evaluation metrics and an exit checkpoint.
 
-- **Workbench:** a hub of projects. Each project has the seven phases as tabs, each with an Overview, a Checklist and your own sections. Write in the Overview and your own sections with blocks: text, callouts, dividers and tables, plus a Decision Log, Approval Tracker, Timeline and SWOT, three AI blocks (Risk Register, Model Card, Data Sources) and three media blocks (Image, Video, Files and links). Pass each checkpoint to unlock the next phase, or override it with a logged reason.
+- **Workbench:** a hub of projects. Each project has the seven phases as tabs, each with an Overview, a Checklist and your own sections. Write in the Overview and your own sections with blocks: text, callouts, dividers and tables, plus a Decision Log, Approval Tracker, Timeline and SWOT, three AI blocks (Risk Register, Model Card, Data Sources) and three media blocks (Image, Video, Files and links). Pass each checkpoint to unlock the next phase, or override it with a logged reason. A Timeline view shows each phase over time, with target dates and dated milestones.
 - **Scorecard:** each project's measures, targets and logged readings, with your own call on each reading.
 - **Pulse:** weekly check-ins once a project is in use, trend charts against your own alert lines, and an incident log.
 - **Guardrails:** five questions set each project's risk tier, and the tier decides which guardrails it must have.
@@ -30,7 +30,7 @@ Normen AI maps the seven product management lifecycle phases (Conceive, Plan, De
 | 5 | Field Guide, Shipped, export | Done |
 | 6 | Accessibility pass, architecture notes | Done |
 
-Phase 2 turns Normen into a project tracker, modeled on a product development playbook: projects with phase tabs and sections (milestone 7, done), a block editor for writing in each section (milestone 8, done), governance blocks (milestone 9, done), AI blocks (milestone 10, done), media blocks (milestone 11, done), a Tools menu, changelog and saved Fit Check results (milestone 12, done), the Scorecard (milestone 13, done), Pulse (milestone 14, done), and Guardrails with risk tiering (milestone 15, done), an ROI model (milestone 16, done), then a timeline view. Phase 3 adds sign-in, saved projects in the cloud, and sharing.
+Phase 2 turns Normen into a project tracker, modeled on a product development playbook: projects with phase tabs and sections (milestone 7, done), a block editor for writing in each section (milestone 8, done), governance blocks (milestone 9, done), AI blocks (milestone 10, done), media blocks (milestone 11, done), a Tools menu, changelog and saved Fit Check results (milestone 12, done), the Scorecard (milestone 13, done), Pulse (milestone 14, done), and Guardrails with risk tiering (milestone 15, done), an ROI model (milestone 16, done), and a timeline view (milestone 17, done). The Curriculum Program Designer case study comes next. Phase 3 adds sign-in, saved projects in the cloud, and sharing.
 
 ## Stack
 
@@ -58,6 +58,7 @@ src/
     scorecard.ts        Scorecard rules: measures, status from the latest reading, repair of saved data
     pulse.ts            Pulse rules: weeks, alert lines, incidents, repair of saved data
     guardrails.ts       Risk tier from the five answers, required guardrails per tier, statuses
+    timeline.ts         Phase spans from pass dates and targets; dated milestones from blocks
     ProjectProvider.tsx WorkspaceProvider (every project, saved to localStorage)
                         and ProjectScope (binds the Workbench to one project)
   lib/          Helpers: Markdown export, date formatting, media address rules, ROI arithmetic

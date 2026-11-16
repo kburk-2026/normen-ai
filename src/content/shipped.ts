@@ -15,6 +15,13 @@ export const SHIPPED: ShippedEntry[] = [
   {
     date: "2026-11-15",
     kind: "Milestone",
+    label: "Milestone 17",
+    title: "Timeline view",
+    body: "A third view beside List and Board: each phase as a bar from start to pass, the current phase running to today, and a target date you can set for every phase still ahead. Dated milestones, decisions and approvals from the project's blocks line up underneath, with overdue milestones marked.",
+  },
+  {
+    date: "2026-11-15",
+    kind: "Milestone",
     label: "Milestone 16",
     title: "ROI model",
     body: "Each project has an ROI page: enter what the system saves and what it costs, and see yearly net, payback and the three-year result, with a cautious case beside the expected one and every sum shown. The same calculator is a block for any section.",

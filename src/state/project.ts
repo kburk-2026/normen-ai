@@ -9,6 +9,7 @@ import { normalizeScorecard } from "./scorecard";
 import { normalizePulse } from "./pulse";
 import { normalizeGuardrailPlan } from "./guardrails";
 import { normalizeRoi } from "@/lib/roi";
+import { normalizeTargets } from "./timeline";
 
 export type PhaseState = "passed" | "current" | "locked";
 
@@ -168,5 +169,7 @@ export function normalizeProject(saved: Partial<Project>): Project {
         : normalizeGuardrailPlan(saved.guardrails),
     // A demo from before version 7 has no ROI model yet: give it the seeded one.
     roi: saved.roi === undefined && isDemo && (saved.demoVersion ?? 0) < 7 ? DEMO_PROJECT.roi : normalizeRoi(saved.roi),
+    targets:
+      saved.targets === undefined && isDemo && (saved.demoVersion ?? 0) < 8 ? DEMO_PROJECT.targets : normalizeTargets(saved.targets),
   };
 }

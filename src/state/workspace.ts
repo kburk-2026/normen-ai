@@ -79,6 +79,7 @@ export function createProject(name: string, blurb: string, fromDemo: boolean): P
         pulse: emptyPulse(),
         guardrails: emptyGuardrailPlan(),
         roi: emptyRoi(),
+        targets: {},
       };
   return {
     ...base,

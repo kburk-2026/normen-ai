@@ -2,17 +2,18 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { IconDownload, IconLayoutKanban, IconLayoutList, IconPrinter, IconRefresh } from "@tabler/icons-react";
+import { IconDownload, IconLayoutKanban, IconLayoutList, IconPrinter, IconRefresh, IconTimeline } from "@tabler/icons-react";
 import { ACTIVITIES } from "@/content/lifecycle";
 import type { PhaseId } from "@/content/phases";
 import { ToolsMenu, useProjectTools } from "@/components/projects/ProjectTools";
 import { useProject } from "@/state/ProjectProvider";
 import BoardView from "./BoardView";
 import ListView from "./ListView";
+import TimelineView from "./TimelineView";
 
-type View = "list" | "board";
+type View = "list" | "board" | "timeline";
 
-/** A project's All phases view (list or board), with export. The view comes from the URL. */
+/** A project's All phases view (list, board or timeline), with export. The view comes from the URL. */
 export default function Workbench({ view }: { view: View }) {
   const { project, statusOf, reset } = useProject();
   const [justPassed, setJustPassed] = useState<PhaseId | null>(null);
@@ -55,6 +56,9 @@ export default function Workbench({ view }: { view: View }) {
               <ViewLink active={view === "board"} href={`/workbench/${project.id}/board`}>
                 <IconLayoutKanban size={16} aria-hidden /> Board
               </ViewLink>
+              <ViewLink active={view === "timeline"} href={`/workbench/${project.id}/timeline`}>
+                <IconTimeline size={16} aria-hidden /> Timeline
+              </ViewLink>
             </div>
             <ToolsMenu />
           </div>
@@ -80,7 +84,13 @@ export default function Workbench({ view }: { view: View }) {
         </div>
 
         <div className="mt-8">
-          {view === "list" ? <ListView justPassed={justPassed} onPassed={setJustPassed} /> : <BoardView />}
+          {view === "list" ? (
+            <ListView justPassed={justPassed} onPassed={setJustPassed} />
+          ) : view === "board" ? (
+            <BoardView />
+          ) : (
+            <TimelineView />
+          )}
         </div>
       </div>
     </>

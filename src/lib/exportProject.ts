@@ -6,6 +6,7 @@ import { logByDay } from "@/state/log";
 import { STATUS_ORDER, allMetrics, recordOf, statusCounts, statusOf } from "@/state/scorecard";
 import { accuracyFloor, pastAlert } from "@/state/pulse";
 import { coverage, requiredFor, stateOf, tierExplanation } from "@/state/guardrails";
+import { daysBetween, phaseSpans, timelineEvents } from "@/state/timeline";
 import {
   CALLOUT_LABEL,
   SWOT_KEYS,
@@ -69,6 +70,7 @@ export function projectToMarkdown(project: Project, exportedOn: string): string 
     }
   }
   out.push(...scorecardToMarkdown(project));
+  out.push(...timelineToMarkdown(project, exportedOn));
   out.push(...guardrailsToMarkdown(project));
   out.push(...roiToMarkdown("## ROI", project.roi));
   out.push(...pulseToMarkdown(project));
@@ -110,6 +112,31 @@ function scorecardToMarkdown(project: Project): string[] {
       out.push("", "Readings:", "", ...table([["Date", "Measure", "Value", "Verdict", "Note"], ...readings.map(({ m, r }) => [formatDate(r.date), m.metric, r.value, r.verdict, r.note])]));
     }
   }
+  return out;
+}
+
+/** Timeline: each phase's dates, then every dated milestone and decision. */
+function timelineToMarkdown(project: Project, today: string): string[] {
+  const spans = phaseSpans(project, today);
+  const events = timelineEvents(project, today);
+  const out = ["", "## Timeline", ""];
+  out.push(
+    ...table([
+      ["Phase", "Started", "Passed, or target", "Days"],
+      ...spans.map((s) => [
+        phaseLabelOf(s.phase),
+        s.start ? formatDate(s.start) : "",
+        s.state === "passed"
+          ? `${s.end ? `Passed ${formatDate(s.end)}` : "Passed (date not recorded)"}${s.override ? " (override)" : ""}`
+          : s.target
+            ? `Target ${formatDate(s.target)}`
+            : "",
+        s.start && s.end ? `${daysBetween(s.start, s.end)}${s.state === "current" ? " so far" : ""}` : "",
+      ]),
+    ]),
+  );
+  if (events.length)
+    out.push("", ...table([["Date", "Milestone or decision", "From"], ...events.map((e) => [formatDate(e.date), e.text, `${e.from}${e.overdue ? " (overdue)" : ""}`])]));
   return out;
 }
 

@@ -15,6 +15,7 @@ import * as W from "./workspace";
 import * as S from "./scorecard";
 import * as PL from "./pulse";
 import * as G from "./guardrails";
+import * as T from "./timeline";
 import { addLog, logEdit, phaseName } from "./log";
 
 // ---------- Workspace: every project, saved to localStorage ----------
@@ -212,6 +213,8 @@ type ProjectValue = {
   setGuardrailReason: (id: string, reason: string) => void;
   /** Replace the project's ROI model. Edits write one changelog line a day. */
   setRoi: (roi: RoiModel) => void;
+  /** Set or clear ("") a target end date for a phase not yet passed. */
+  setPhaseTarget: (phase: PhaseId, date: string) => void;
 };
 
 const ProjectContext = createContext<ProjectValue | null>(null);
@@ -313,6 +316,7 @@ export function ProjectScope({ project, children }: { project: Project; children
       setGuardrailStatus: (id, status) => update((p) => G.setGuardrailStatus(p, id, status)),
       setGuardrailReason: (id, reason) => update((p) => G.setGuardrailReason(p, id, reason, today())),
       setRoi: (roi) => update((p) => addLog({ ...p, roi }, "ROI model edited", `roi:${today()}`)),
+      setPhaseTarget: (phase, date) => update((p) => T.setPhaseTarget(p, phase, date)),
     }),
     [project, update, resetDemo],
   );
