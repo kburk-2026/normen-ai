@@ -1,6 +1,6 @@
 import { PHASES, type PhaseId } from "@/content/phases";
 import { CHECKPOINTS } from "@/content/lifecycle";
-import { DEMO_ADDED_PAGES, DEMO_PROJECT, DEMO_VERSION, OLD_SEED_TIME, SEED_TIME, allDefaultSections, PROJECT_STATUSES, type Project } from "@/content/demo";
+import { DEMO_ADDED_PAGES, DEMO_PROJECT, DEMO_VERSION, OLD_DEMO_CREATED, OLD_SEED_TIME, SEED_TIME, allDefaultSections, PROJECT_STATUSES, type Project } from "@/content/demo";
 import { normalizeBlocks } from "@/content/blocks";
 import { FIT_BANDS } from "@/content/fitCheck";
 import type { FitResult } from "@/content/demo";
@@ -141,7 +141,11 @@ export function normalizeProject(saved: Partial<Project>): Project {
       : (base?.status ?? "Draft"),
     isDemo,
     ...(isDemo ? { demoVersion: DEMO_VERSION } : {}),
-    createdAt: saved.createdAt ?? base?.createdAt ?? new Date().toISOString(),
+    // Older demo saves were created at midnight UTC, which reads as the day before in the Americas.
+    createdAt:
+      isDemo && saved.createdAt === OLD_DEMO_CREATED
+        ? DEMO_PROJECT.createdAt
+        : (saved.createdAt ?? base?.createdAt ?? new Date().toISOString()),
     updatedAt: fromOldSeed(saved.updatedAt) ?? base?.updatedAt ?? new Date().toISOString(),
     activities: saved.activities ?? {},
     checks: saved.checks ?? {},

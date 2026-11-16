@@ -98,6 +98,8 @@ export type Project = {
 export const SEED_TIME = "2026-11-04T12:00:00.000Z";
 /** The seed time before milestone 8, still found in older saves. */
 export const OLD_SEED_TIME = "2026-11-04T00:00:00.000Z";
+/** The demo's creation time before milestone 8, at midnight UTC: 30 September in the Americas. */
+export const OLD_DEMO_CREATED = "2026-10-01T00:00:00.000Z";
 
 /** The two sections every phase starts with. IDs are stable per phase. */
 export function defaultSections(phase: PhaseId, at = SEED_TIME): Section[] {
